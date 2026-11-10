@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f4f6">
+  <title>LarpBank | Next-Gen Finance</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind for rapid layout (custom CSS overrides heavily) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & RESET
+       ========================================================================== */
+    :root {
+      --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      
+      /* Light Theme (Images 1, 2, 4) */
+      --bg-light: #f4f5f7;
+      --surface-light: #ffffff;
+      --text-main-light: #111827;
+      --text-muted-light: #6b7280;
+      --border-light: #e5e7eb;
+      
+      /* Dark Theme (Image 3) */
+      --bg-dark: #000000;
+      --surface-dark: #1c1c1e;
+      --surface-darker: #121212;
+      --text-main-dark: #ffffff;
+      --text-muted-dark: #8e8e93;
+      --border-dark: #2c2c2e;
+      
+      /* Accents */
+      --accent-blue: #2563eb;
+      --accent-blue-light: #e0e7ff;
+      --accent-green: #22c55e;
+      --accent-green-light: #dcfce7;
+      --accent-red: #ef4444;
+      --accent-red-light: #fee2e2;
+      --accent-purple: #a78bfa;
+      --accent-purple-light: #f3e8ff;
+      
+      /* Layout */
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      
+      --nav-height: 80px;
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-primary);
+      background-color: var(--bg-light);
+      color: var(--text-main-light);
+      overscroll-behavior-y: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Utility Classes */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-base { font-size: 16px; }
+    .text-lg { font-size: 18px; }
+    .text-xl { font-size: 20px; }
+    .text-2xl { font-size: 24px; }
+    .text-3xl { font-size: 30px; }
+    .text-4xl { font-size: 36px; }
+    
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold { font-weight: 800; }
+
+    .text-green { color: var(--accent-green); }
+    .text-red { color: var(--accent-red); }
+    .text-blue { color: var(--accent-blue); }
+    .text-muted { color: var(--text-muted-light); }
+
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-8 { margin-top: 32px; }
+    
+    .p-4 { padding: 16px; }
+    .p-5 { padding: 20px; }
+    .px-4 { padding-left: 16px; padding-right: 16px; }
+    .py-2 { padding-top: 8px; padding-bottom: 8px; }
+    .py-3 { padding-top: 12px; padding-bottom: 12px; }
+    
+    .rounded-md { border-radius: var(--radius-md); }
+    .rounded-lg { border-radius: var(--radius-lg); }
+    .rounded-xl { border-radius: var(--radius-xl); }
+    .rounded-full { border-radius: 9999px; }
+
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+    .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+
+    /* Hide scrollbars globally */
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: transparent; }
+
+    /* ==========================================================================
+       2. COMPONENTS & ANIMATIONS
+       ========================================================================== */
+    
+    /* View Transitions */
+    .view {
+      display: none;
+      opacity: 0;
+      padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+      min-height: 100vh;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .view.active {
+      display: block;
+      opacity: 1;
+      animation: viewFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes viewFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+      background-size: 200% 100%;
+      animation: skeletonLoading 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes skeletonLoading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Floating Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: calc(20px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: var(--radius-xl);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-nav.dark-mode {
+      background: rgba(28, 28, 30, 0.85);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted-light);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: var(--radius-lg);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--text-main-light);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .bottom-nav.dark-mode .nav-item { color: var(--text-muted-dark); }
+    .bottom-nav.dark-mode .nav-item.active {
+      color: var(--text-main-dark);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item i { font-size: 18px; }
+
+    /* Theme Overrides for Dark Mode View */
+    .theme-dark {
+      background-color: var(--bg-dark);
+      color: var(--text-main-dark);
+    }
+    .theme-dark .text-muted { color: var(--text-muted-dark); }
+    .theme-dark .surface { background-color: var(--surface-dark); }
+
+    /* Debit Card Style */
+    .debit-card {
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+      border-radius: var(--radius-lg);
+      color: white;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(29, 78, 216, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .debit-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    /* Pills & Buttons */
+    .pill-btn {
+      background: var(--surface-light);
+      border-radius: var(--radius-xl);
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main-light);
+      white-space: nowrap;
+      border: 1px solid rgba(0,0,0,0.03);
+      transition: transform 0.15s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+    .pill-btn:active { transform: scale(0.95); }
+
+    .action-grid-item {
+      background: var(--surface-light);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .action-grid-item:active { transform: scale(0.95); }
+
+    /* Chart Tooltips */
+    .chart-container {
+      position: relative;
+      width: 100%;
+    }
+    .chart-tooltip {
+      position: absolute;
+      background: #111;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+      background: var(--surface-light);
+      width: 100%;
+      max-width: 480px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 24px;
+      transform: translateY(100%);
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    /* Chat Bubbles */
+    .bubble-ai { 
+      background: var(--surface-light); 
+      border-radius: 20px 20px 20px 4px; 
+      border: 1px solid var(--border-light);
+    }
+    .bubble-user { 
+      background: var(--accent-blue); 
+      color: white; 
+      border-radius: 20px 20px 4px 20px; 
+    }
+
+    /* Toast */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: #111;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Custom Scrollbar for lists */
+    .overflow-x-auto { overflow-x: auto; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- ==========================================================================
+       AUTH VIEW
+       ========================================================================== -->
+  <div id="view-auth" class="view active flex flex-col justify-center p-6" style="background: var(--bg-light); height: 100vh; padding-bottom: 0;">
+    <div class="w-full max-w-sm mx-auto">
+      <div class="text-center mb-10">
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+          <i class="fas fa-bolt text-white text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">LarpBank</h1>
+        <p class="text-gray-500 mt-2 text-sm font-medium">The internet's finest fictional bank.</p>
+      </div>
+      
+      <div class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
+        <div class="flex bg-gray-100 rounded-xl p-1 mb-6">
+          <button id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all">Sign In</button>
+          <button id="tab-signup" class="flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all">Sign Up</button>
+        </div>
+        
+        <form id="auth-form" class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block">Username</label>
+            <input type="text" id="username" placeholder="Enter username" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" required>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block">Password</label>
+            <input type="password" id="password" placeholder="Enter password" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" required>
+          </div>
+          <button type="submit" id="auth-submit" class="w-full bg-black text-white rounded-xl py-3.5 font-bold text-sm mt-4 active:scale-95 transition-all">Sign In</button>
+        </form>
+        <p class="text-center text-[10px] text-gray-400 mt-4 leading-relaxed">
+          <i class="fas fa-lock mr-1"></i> Data is saved locally in your browser.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MAIN APP CONTAINER
+       ========================================================================== -->
+  <div id="app-container" class="hidden">
+
+    <!-- ========================================================================
+         VIEW 1: BANKING (Image 4 Style)
+         ======================================================================== -->
+    <div id="view-banking" class="view p-5 theme-light">
+      <header class="flex justify-between items-center mb-6 pt-2">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-bars text-xl text-gray-700 cursor-pointer active:scale-95 transition"></i>
+        </div>
+        <div class="flex items-center gap-4">
+          <i class="far fa-bell text-xl text-gray-700 cursor-pointer active:scale-95 transition"></i>
+        </div>
+      </header>
+
+      <h2 class="text-2xl font-bold mb-4 text-gray-900" id="greeting-text">Good evening, User</h2>
+
+      <!-- Debit Card -->
+      <div class="debit-card mb-6">
+        <p class="text-sm text-blue-200 mb-2 font-medium">Debit Card</p>
+        <h3 class="text-[32px] font-extrabold mb-4 tracking-tight" id="banking-balance">$0.00</h3>
+        <p class="text-xs text-blue-200 font-medium">Available balance</p>
+      </div>
+      
+      <div class="flex justify-between items-center mb-6 px-1">
+        <p class="text-sm font-semibold text-gray-700">Secure Banking ••••<span id="banking-card-num">7527</span></p>
+        <p class="text-sm text-gray-500 font-medium">11/29</p>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-1">
+        <button class="pill-btn shadow-sm" onclick="UI.showToast('FastPay initialized')">Send FastPay</button>
+        <button class="pill-btn shadow-sm" onclick="UI.showToast('Bill Pay opened')">Pay Bills</button>
+        <button class="pill-btn shadow-sm" onclick="UI.showToast('Deposit flow opened')">Deposit</button>
+        <button class="pill-btn shadow-sm" onclick="UI.showToast('More actions')">More</button>
+      </div>
+
+      <!-- My Accounts -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-900">My Accounts</h3>
+        <div class="w-6 h-6 bg-blue-900 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition">
+          <i class="fas fa-arrow-up text-white text-[10px] transform rotate-45"></i>
+        </div>
+      </div>
+      <div class="space-y-3 mb-8" id="banking-accounts">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Tools and Services -->
+      <h3 class="text-lg font-bold mb-4 text-gray-900">Tools and Services</h3>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="action-grid-item shadow-sm border border-gray-100">
+          <i class="fas fa-tachometer-alt text-blue-600 text-xl mb-2"></i>
+          <span class="text-[10px] font-semibold text-gray-600">Credit Score</span>
+        </div>
+        <div class="action-grid-item shadow-sm border border-gray-100">
+          <i class="fas fa-chart-bar text-green-600 text-xl mb-2"></i>
+          <span class="text-[10px] font-semibold text-gray-600">Analytics</span>
+        </div>
+        <div class="action-grid-item shadow-sm border border-gray-100">
+          <i class="fas fa-dollar-sign text-red-500 text-xl mb-2"></i>
+          <span class="text-[10px] font-semibold text-gray-600">Offers</span>
+        </div>
+        <div class="action-grid-item shadow-sm border border-gray-100">
+          <i class="fas fa-chart-line text-purple-600 text-xl mb-2"></i>
+          <span class="text-[10px] font-semibold text-gray-600">Invest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+         VIEW 2: ANALYTICS (Image 1 Style)
+         ======================================================================== -->
+    <div id="view-analytics" class="view p-5 theme-light bg-white min-h-screen">
+      <header class="flex justify-between items-center mb-4 pt-2">
+        <i class="fas fa-bars text-xl text-gray-700 cursor-pointer"></i>
+        <div class="relative">
+          <i class="far fa-bell text-xl text-gray-700 cursor-pointer"></i>
+          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+        </div>
+      </header>
+
+      <!-- Pills -->
+      <div class="flex items-center gap-2 mb-6">
+        <button class="bg-gray-100 text-gray-800 font-semibold px-4 py-1.5 rounded-full text-sm flex items-center gap-2">
+          Last 30 days <i class="fas fa-chevron-down text-[10px]"></i>
+        </button>
+        <button class="bg-gray-100 text-gray-600 font-semibold px-4 py-1.5 rounded-full text-sm flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span> Live View
+        </button>
+        <button class="ml-auto border border-gray-200 text-gray-800 font-semibold px-4 py-1.5 rounded-full text-sm flex items-center gap-2">
+          <i class="far fa-file-alt"></i> Report
+        </button>
+      </div>
+
+      <!-- Stats Header -->
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <p class="text-gray-500 text-sm font-medium mb-1">Total sales</p>
+          <p class="text-3xl font-extrabold text-gray-900">$3,032,193.21</p>
+          <p class="text-sm font-bold text-green-500 mt-1"><i class="fas fa-arrow-up text-xs mr-1"></i>24%</p>
+        </div>
+        <div class="text-right">
+          <p class="text-gray-500 text-sm font-medium mb-1">Orders</p>
+          <p class="text-3xl font-extrabold text-gray-900">128</p>
+          <p class="text-sm font-bold text-green-500 mt-1"><i class="fas fa-arrow-up text-xs mr-1"></i>20%</p>
+        </div>
+      </div>
+
+      <!-- Chart Area -->
+      <div class="h-48 w-full mb-8 relative chart-container" id="analytics-chart">
+        <!-- SVG injected via JS -->
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 gap-3 mb-8">
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">50+</span>
+            <i class="fas fa-box text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">Orders to fulfill</p>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">50+</span>
+            <i class="fas fa-credit-card text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">Payments to capture</p>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">50+</span>
+            <i class="fas fa-undo text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">Return requests</p>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">49</span>
+            <i class="fas fa-exclamation-triangle text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">High risk orders</p>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">37</span>
+            <i class="fas fa-clipboard-list text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">Chargebacks</p>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xl font-bold text-gray-900">48</span>
+            <i class="fas fa-copy text-gray-400"></i>
+          </div>
+          <p class="text-xs text-gray-500 font-medium">Orders with blocks</p>
+        </div>
+      </div>
+      
+      <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">Instant store performance<br>insights at your fingertips</h3>
+      <p class="text-sm text-gray-500">Track store performance directly within...</p>
+    </div>
+
+    <!-- ========================================================================
+         VIEW 3: INVESTING (Image 2 Style)
+         ======================================================================== -->
+    <div id="view-investing" class="view p-5 theme-light bg-white min-h-screen">
+      <header class="flex justify-between items-center mb-4 pt-2">
+        <i class="fas fa-bars text-xl text-gray-700 cursor-pointer"></i>
+        <i class="far fa-bell text-xl text-gray-700 cursor-pointer"></i>
+      </header>
+
+      <h1 class="text-2xl font-bold text-gray-900 mb-1">Investing</h1>
+      <h2 class="text-[38px] font-extrabold text-gray-900 mb-2 tracking-tighter" id="investing-total">$2,398,113.00</h2>
+      
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-sm font-bold text-green-500 flex items-center gap-1">
+          <i class="fas fa-caret-up"></i> $153,516.37 (6.84%)
+        </span>
+        <span class="text-sm text-gray-400 font-medium">All time</span>
+      </div>
+
+      <!-- Chart Area -->
+      <div class="h-44 w-full mb-4 relative chart-container" id="investing-chart">
+        <!-- SVG injected via JS -->
+      </div>
+
+      <!-- Time Selector -->
+      <div class="flex justify-between text-xs font-bold text-green-500 mb-8 px-1">
+        <button class="time-btn" onclick="UI.showToast('1D selected')">1D</button>
+        <button class="time-btn" onclick="UI.showToast('1W selected')">1W</button>
+        <button class="time-btn" onclick="UI.showToast('1M selected')">1M</button>
+        <button class="time-btn" onclick="UI.showToast('3M selected')">3M</button>
+        <button class="time-btn" onclick="UI.showToast('YTD selected')">YTD</button>
+        <button class="time-btn" onclick="UI.showToast('1Y selected')">1Y</button>
+        <button class="time-btn bg-green-500 text-white rounded-full px-3 py-1 shadow-md shadow-green-500/30">ALL</button>
+      </div>
+
+      <!-- Buying Power -->
+      <div class="flex justify-between items-center py-4 border-b border-gray-100 mb-6 cursor-pointer active:opacity-70" onclick="UI.showToast('Buying power details')">
+        <span class="text-base font-medium text-gray-700">Buying power</span>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-base text-gray-900">$80.03</span>
+          <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+        </div>
+      </div>
+
+      <!-- Stocks List -->
+      <h3 class="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">Stocks <i class="fas fa-chevron-right text-xs text-gray-400"></i></h3>
+      <div class="space-y-5" id="stocks-list">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- ========================================================================
+         VIEW 4: CRYPTO (Image 3 Style - Dark Mode)
+         ======================================================================== -->
+    <div id="view-crypto" class="view p-5 theme-dark min-h-screen">
+      <header class="flex justify-between items-center mb-6 pt-2">
+        <i class="fas fa-bars text-xl text-white cursor-pointer"></i>
+      </header>
+
+      <!-- Top Pills -->
+      <div class="flex gap-2 mb-8">
+        <div class="bg-[#a78bfa] text-black font-semibold px-5 py-1.5 rounded-full text-sm cursor-pointer shadow-lg shadow-purple-500/20">Home</div>
+        <div class="bg-[#2c2c2e] text-white font-medium px-5 py-1.5 rounded-full text-sm cursor-pointer">Trade</div>
+        <div class="bg-[#2c2c2e] text-white font-medium px-5 py-1.5 rounded-full text-sm cursor-pointer">Explore</div>
+      </div>
+
+      <h2 class="text-[40px] font-extrabold text-white mb-2 tracking-tighter" id="crypto-total">$10,032,216.83</h2>
+      
+      <div class="flex items-center gap-2 mb-8">
+        <span class="text-sm font-bold text-green-500">+$121,518.74</span>
+        <span class="text-xs bg-[#1c1c1e] text-green-500 px-2.5 py-1 rounded-full font-bold border border-green-900">+1.23%</span>
+      </div>
+
+      <!-- Cash -->
+      <div class="flex justify-between items-center bg-[#1c1c1e] p-4 rounded-2xl mb-8 border border-[#2c2c2e]">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-[#2c2c2e] rounded-full flex items-center justify-center">
+            <i class="fas fa-money-bill-wave text-gray-300 text-sm"></i>
+          </div>
+          <span class="font-bold text-white text-sm">Cash</span>
+        </div>
+        <span class="font-bold text-white text-sm">$0.00</span>
+      </div>
+
+      <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">Tokens <i class="fas fa-chevron-right text-xs text-gray-500"></i></h3>
+      
+      <!-- Tokens List -->
+      <div class="space-y-2 mb-8" id="crypto-list">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Floating Search & Add Button -->
+      <div class="fixed bottom-[100px] left-0 right-0 max-w-md mx-auto px-5 flex justify-between items-center pointer-events-none z-40">
+        <div class="bg-[#2c2c2e]/90 backdrop-blur-md rounded-full px-4 py-3 flex items-center gap-2 w-[70%] pointer-events-auto shadow-lg border border-[#3c3c3e] cursor-text">
+          <i class="fas fa-search text-gray-400"></i>
+          <input type="text" placeholder="Search tokens" class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-gray-400">
+        </div>
+        <button class="w-12 h-12 bg-[#a78bfa] rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30 pointer-events-auto active:scale-95 transition">
+          <i class="fas fa-plus text-black text-lg font-bold"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+         VIEW 5: AI CHAT (LarpAI)
+         ======================================================================== -->
+    <div id="view-chat" class="view flex flex-col h-screen bg-gray-50 pb-0">
+      <header class="bg-white/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-200 fixed top-0 left-0 right-0 z-20 max-w-md mx-auto">
+        <div class="w-8"></div>
+        <h2 class="text-lg font-bold text-gray-900">LarpAI Assistant</h2>
+        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+          <i class="fas fa-robot text-sm"></i>
+        </div>
+      </header>
+      
+      <div id="chat-messages" class="flex-1 overflow-y-auto p-4 pt-20 pb-32 space-y-4 no-scrollbar">
+        <!-- Messages injected here -->
+        <div class="flex justify-start">
+          <div class="bubble-ai px-4 py-3 text-sm text-gray-700 shadow-sm max-w-[85%]">
+            Hello! I am LarpAI, your personal financial assistant. Ask me about your balances, stocks, or crypto portfolio.
+          </div>
+        </div>
+      </div>
+      
+      <div class="fixed bottom-[100px] left-0 right-0 max-w-md mx-auto px-4 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent pt-4 pb-2 z-10">
+        <form id="chat-form" class="flex items-center gap-2">
+          <input type="text" id="chat-input" placeholder="Ask anything about your accounts..." class="flex-1 bg-white border border-gray-200 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" autocomplete="off">
+          <button type="submit" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md active:scale-95 transition flex-shrink-0">
+            <i class="fas fa-arrow-up text-white text-lg"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================================
+         VIEW 6: SETTINGS
+         ======================================================================== -->
+    <div id="view-settings" class="view p-5 bg-gray-50 min-h-screen">
+      <header class="flex items-center gap-3 mb-6 pt-2">
+        <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+      </header>
+      
+      <!-- Profile Card -->
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6 flex items-center gap-4">
+        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-inner" id="settings-avatar">
+          U
+        </div>
+        <div>
+          <h2 class="font-bold text-lg text-gray-900" id="settings-username">User</h2>
+          <p class="text-sm text-gray-500 font-medium">Premium Account</p>
+        </div>
+      </div>
+
+      <!-- API Config -->
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6">
+        <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <i class="fas fa-key text-blue-500"></i> DeepSeek API Configuration
+        </h3>
+        <p class="text-xs text-gray-500 mb-3 leading-relaxed">To enable real AI responses in LarpAI, enter your DeepSeek API key below. It is saved locally on your device.</p>
+        <input type="password" id="api-key-input" placeholder="sk-..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="save-api-key" class="w-full bg-black text-white rounded-xl py-3 font-semibold text-sm active:scale-95 transition mb-2">Save API Key</button>
+        <button id="remove-api-key" class="w-full bg-gray-100 text-gray-600 rounded-xl py-3 font-semibold text-sm active:scale-95 transition">Remove Key</button>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="bg-red-50 rounded-3xl p-5 border border-red-100 mb-6">
+        <h3 class="font-bold text-red-600 mb-2">Danger Zone</h3>
+        <p class="text-xs text-red-500 mb-4">This will permanently delete your account and all data from this browser.</p>
+        <button id="clear-data-btn" class="w-full bg-white text-red-600 border border-red-200 rounded-xl py-3 font-bold text-sm active:scale-95 transition">
+          Clear All Data
+        </button>
+      </div>
+
+      <button id="logout-btn" class="w-full bg-gray-200 text-gray-800 font-bold rounded-2xl py-4 active:scale-95 transition mb-4">
+        Log Out
+      </button>
+      
+      <p class="text-center text-xs text-gray-400 mb-8 font-medium">LarpBank v4.0.0 · Made for the LARP.</p>
+    </div>
+
+    <!-- ==========================================================================
+         FLOATING BOTTOM NAVIGATION
+         ========================================================================== -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <div class="nav-item active" data-target="banking">
+        <i class="fas fa-home"></i>
+        <span>Banking</span>
+      </div>
+      <div class="nav-item" data-target="analytics">
+        <i class="fas fa-chart-pie"></i>
+        <span>Analytics</span>
+      </div>
+      <div class="nav-item" data-target="investing">
+        <i class="fas fa-chart-line"></i>
+        <span>Invest</span>
+      </div>
+      <div class="nav-item" data-target="crypto">
+        <i class="fab fa-bitcoin"></i>
+        <span>Crypto</span>
+      </div>
+      <div class="nav-item" data-target="chat">
+        <i class="fas fa-wand-magic-sparkles"></i>
+        <span>AI</span>
+      </div>
+      <div class="nav-item" data-target="settings">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </div>
+    </nav>
+
+  </div> <!-- End App Container -->
+
+  <!-- ==========================================================================
+       MODAL OVERLAY
+       ========================================================================== -->
+  <div class="modal-overlay" id="global-modal">
+    <div class="modal-content" id="modal-content">
+      <!-- Dynamic content injected here -->
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT
+       ========================================================================== -->
+  <script>
+    'use strict';
+
+    /* ==========================================================================
+       1. UTILITIES & HELPERS
+       ========================================================================== */
+    const Utils = {
+      // Format numbers as USD currency
+      formatCurrency(amount, decimals = 2) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        }).format(amount);
+      },
+
+      // Format large numbers with K, M, B suffixes
+      formatCompact(amount) {
+        return new Intl.NumberFormat('en-US', {
+          notation: 'compact',
+          compactDisplay: 'short',
+          maximumFractionDigits: 1
+        }).format(amount);
+      },
+
+      // Format percentage
+      formatPercent(value) {
+        return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+      },
+
+      // Format date to short string (e.g., "Jun 5")
+      formatDateShort(dateString) {
+        const d = new Date(dateString);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      },
+
+      // Generate a random number between min and max
+      randomRange(min, max) {
+        return Math.random() * (max - min) + min;
+      },
+
+      // Generate a random integer
+      randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      },
+
+      // Pick a random element from an array
+      randomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      },
+
+      // Generate a UUID v4
+      generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      },
+
+      // Animate a numerical value in a DOM element
+      animateValue(element, start, end, duration = 800) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          // Easing function (easeOutCubic)
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = start + (end - start) * eased;
+          element.textContent = this.formatCurrency(current);
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+      },
+
+      // Debounce function
+      debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+    };
+
+    /* ==========================================================================
+       2. MASSIVE MOCK DATA GENERATOR
+       ========================================================================== */
+    const DataGenerator = {
+      // Generate list of stocks
+      generateStocks() {
+        const baseStocks = [
+          { symbol: 'AAPL', name: 'Apple Inc.', price: 413160.66, change: 0.84, color: 'bg-gray-100 text-gray-800' },
+          { symbol: 'TSLA', name: 'Tesla, Inc.', price: 239559.53, change: -1.42, color: 'bg-red-100 text-red-500' },
+          { symbol: 'NVDA', name: 'NVIDIA Corporation', price: 189806.34, change: 2.73, color: 'bg-green-100 text-green-600' },
+          { symbol: 'MSFT', name: 'Microsoft Corp.', price: 216798.96, change: 0.51, color: 'bg-blue-100 text-blue-600' },
+          { symbol: 'AMZN', name: 'Amazon.com, Inc.', price: 145000.00, change: 1.20, color: 'bg-orange-100 text-orange-600' },
+          { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 198000.00, change: -0.30, color: 'bg-yellow-100 text-yellow-600' },
+          { symbol: 'META', name: 'Meta Platforms', price: 312000.00, change: 3.10, color: 'bg-blue-50 text-blue-800' }
+        ];
+        return baseStocks;
+      },
+
+      // Generate list of crypto tokens
+      generateCrypto() {
+        const baseCrypto = [
+          { symbol: 'BTC', name: 'Bitcoin', amount: 14.4911, price: 1346752.48, change: 9581.37, iconBg: 'bg-[#f7931a]', icon: 'fa-bitcoin' },
+          { symbol: 'ETH', name: 'Ethereum', amount: 329.7971, price: 1087449.98, change: 14850.12, iconBg: 'bg-[#627eea]', icon: 'fa-ethereum' },
+          { symbol: 'SOL', name: 'Solana', amount: 3297.97, price: 630110.00, change: -1875.52, iconBg: 'bg-black border border-white', icon: 'fa-s' },
+          { symbol: 'DOGE', name: 'Dogecoin', amount: 1648985.63, price: 627523.46, change: 19081.31, iconBg: 'bg-[#c2a633]', icon: 'fa-dog' },
+          { symbol: 'USDC', name: 'USD Coin', amount: 424738.72, price: 431484.17, change: 6895.73, iconBg: 'bg-[#2775ca]', icon: 'fa-dollar-sign' },
+          { symbol: 'ADA', name: 'Cardano', amount: 2078721.28, price: 952378.25, change: 25827.61, iconBg: 'bg-white text-black', icon: 'fa-c' },
+          { symbol: 'AVAX', name: 'Avalanche', amount: 14491.09, price: 514440.64, change: -135.49, iconBg: 'bg-[#e84142]', icon: 'fa-a' },
+          { symbol: 'LINK', name: 'Chainlink', amount: 33279.53, price: 250000.00, change: 5340.58, iconBg: 'bg-[#2a5ada]', icon: 'fa-link' }
+        ];
+        return baseCrypto;
+      },
+
+      // Generate a large array of transactions
+      generateTransactions() {
+        const categories = {
+          'Income': ['Payroll Deposit', 'Freelance', 'Dividend'],
+          'Food': ['Starbucks', 'Chipotle', 'Local Bistro', 'Whole Foods'],
+          'Shopping': ['Amazon', 'Target', 'Nike', 'Apple Store'],
+          'Travel': ['Delta Airlines', 'Uber', 'Airbnb', 'Marriott'],
+          'Entertainment': ['Netflix', 'Spotify', 'AMC', 'Steam'],
+          'Utilities': ['Comcast', 'PG&E', 'Water Dept', 'Verizon']
+        };
+        
+        const txs = [];
+        const catKeys = Object.keys(categories);
+
+        for (let i = 0; i < 100; i++) {
+          const cat = Utils.randomElement(catKeys);
+          const merch = Utils.randomElement(categories[cat]);
+          const isIncome = cat === 'Income';
+          
+          const amount = isIncome 
+            ? Utils.randomRange(500, 3000) 
+            : -Utils.randomRange(5, 250);
+
+          const date = new Date(Date.now() - Utils.randomRange(0, 60) * 24 * 60 * 60 * 1000);
+
+          txs.push({
+            id: Utils.generateUUID(),
+            date: date.toISOString(),
+            description: merch,
+            category: cat,
+            amount: parseFloat(amount.toFixed(2))
+          });
+        }
+
+        // Sort by date descending
+        return txs.sort((a, b) => new Date(b.date) - new Date(a.date));
+      },
+
+      // Generate a new user object
+      createUser(username, password) {
+        return {
+          id: Utils.generateUUID(),
+          username: username,
+          password: password, // In real app, hash this!
+          accounts: {
+            checking: { 
+              name: 'Checking', 
+              balance: 5072123432.21, 
+              number: '7527' 
+            },
+            platinum: { 
+              name: 'Platinum Card', 
+              balance: -134.88, 
+              number: '7537' 
+            },
+            savings: { 
+              name: 'Savings', 
+              balance: 11514.72, 
+              number: '9538' 
+            }
+          },
+          investing: {
+            total: 2398113.00,
+            change: 153516.37,
+            changePct: 6.84,
+            buyingPower: 80.03,
+            stocks: this.generateStocks()
+          },
+          crypto: {
+            total: 10032216.83,
+            change: 121518.74,
+            changePct: 1.23,
+            tokens: this.generateCrypto()
+          },
+          transactions: this.generateTransactions()
+        };
+      }
+    };
+
+    /* ==========================================================================
+       3. STATE MANAGEMENT & LOCAL STORAGE
+       ========================================================================== */
+    const Store = {
+      USERS_KEY: 'larpbank_users_v4',
+      SESSION_KEY: 'larpbank_session_v4',
+      API_KEY: 'larpbank_deepseek_v4',
+
+      getUsers() {
+        try {
+          return JSON.parse(localStorage.getItem(this.USERS_KEY)) || [];
+        } catch {
+          return [];
+        }
+      },
+
+      saveUsers(users) {
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+      },
+
+      getSessionUser() {
+        const username = localStorage.getItem(this.SESSION_KEY);
+        if (!username) return null;
+        return this.getUsers().find(u => u.username === username) || null;
+      },
+
+      setSession(username) {
+        localStorage.setItem(this.SESSION_KEY, username);
+      },
+
+      clearSession() {
+        localStorage.removeItem(this.SESSION_KEY);
+      },
+
+      getApiKey() {
+        return localStorage.getItem(this.API_KEY) || '';
+      },
+
+      setApiKey(key) {
+        localStorage.setItem(this.API_KEY, key);
+      },
+
+      clearAll() {
+        localStorage.removeItem(this.USERS_KEY);
+        localStorage.removeItem(this.SESSION_KEY);
+        localStorage.removeItem(this.API_KEY);
+      }
+    };
+
+    /* ==========================================================================
+       4. CUSTOM SVG CHARTING ENGINE
+       ========================================================================== */
+    const ChartEngine = {
+      // Generate a smooth cubic bezier path from points
+      generateSmoothPath(data, width, height, stroke, fillGradient = null) {
+        if (!data || data.length === 0) return '';
+
+        const max = Math.max(...data);
+        const min = Math.min(...data);
+        const range = max - min || 1;
+        const stepX = width / (data.length - 1);
+        
+        const points = data.map((val, i) => ({
+          x: i * stepX,
+          y: height - ((val - min) / range) * height
+        }));
+
+        let d = `M ${points[0].x},${points[0].y}`;
+        
+        // Catmull-Rom to Bezier conversion for smooth curves
+        for (let i = 0; i < points.length - 1; i++) {
+          const p0 = points[i - 1] || points[i];
+          const p1 = points[i];
+          const p2 = points[i + 1];
+          const p3 = points[i + 2] || p2;
+          
+          const cp1x = p1.x + (p2.x - p0.x) / 6;
+          const cp1y = p1.y + (p2.y - p0.y) / 6;
+          const cp2x = p2.x - (p3.x - p1.x) / 6;
+          const cp2y = p2.y - (p3.y - p1.y) / 6;
+          
+          d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+        }
+
+        let svg = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full" preserveAspectRatio="none">`;
+        
+        if (fillGradient) {
+          const id = 'grad-' + Utils.generateUUID();
+          svg += `
+            <defs>
+              <linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${fillGradient}" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="${fillGradient}" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="${d} L ${width},${height} L 0,${height} Z" fill="url(#${id})" />
+          `;
+        }
+        
+        svg += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />`;
+        svg += `</svg>`;
+        return svg;
+      },
+
+      // Generate random data for charts based on a trend
+      generateTrendData(points, trend = 0, volatility = 20) {
+        let val = 50;
+        return Array.from({length: points}, (_, i) => {
+          val += (Math.random() - 0.5) * volatility + (trend * 1.5);
+          return Math.max(5, Math.min(95, val));
+        });
+      },
+
+      // Generate double line chart (Image 1 style)
+      generateDoubleLineChart(data1, data2, width, height) {
+        const max = Math.max(...data1, ...data2);
+        const min = Math.min(...data1, ...data2);
+        const range = max - min || 1;
+        const stepX = width / (data1.length - 1);
+
+        const getPoints = (data) => data.map((val, i) => ({
+          x: i * stepX,
+          y: height - ((val - min) / range) * height
+        }));
+
+        const p1 = getPoints(data1);
+        const p2 = getPoints(data2);
+
+        // Simple lines
+        let path1 = `M ${p1[0].x},${p1[0].y}`;
+        let path2 = `M ${p2[0].x},${p2[0].y}`;
+
+        for(let i=1; i<p1.length; i++) {
+          path1 += ` L ${p1[i].x},${p1[i].y}`;
+          path2 += ` L ${p2[i].x},${p2[i].y}`;
+        }
+
+        let svg = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full" preserveAspectRatio="none">`;
+        
+        // Grid lines
+        svg += `<line x1="0" y1="${height*0.25}" x2="${width}" y2="${height*0.25}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4" />`;
+        svg += `<line x1="0" y1="${height*0.5}" x2="${width}" y2="${height*0.5}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4" />`;
+        svg += `<line x1="0" y1="${height*0.75}" x2="${width}" y2="${height*0.75}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4" />`;
+
+        // Dashed Line (Data 2)
+        svg += `<path d="${path2}" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4" />`;
+        
+        // Solid Blue Line (Data 1)
+        svg += `<path d="${path1}" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />`;
+        
+        svg += `</svg>`;
+        return svg;
+      }
+    };
+
+    /* ==========================================================================
+       5. UI CONTROLLER (Toasts, Modals, DOM updates)
+       ========================================================================== */
+    const UI = {
+      showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        
+        let icon = 'fa-info-circle';
+        if (type === 'success') icon = 'fa-check-circle';
+        if (type === 'error') icon = 'fa-exclamation-circle';
+
+        toast.innerHTML = `<i class="fas ${icon} mr-2"></i> ${message}`;
+        
+        if (type === 'error') toast.style.background = 'var(--accent-red)';
+        if (type === 'success') toast.style.background = 'var(--accent-green)';
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-20px)';
+          toast.style.transition = 'all 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      },
+
+      openModal(htmlContent) {
+        const modal = document.getElementById('global-modal');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = htmlContent;
+        modal.classList.add('active');
+      },
+
+      closeModal() {
+        const modal = document.getElementById('global-modal');
+        modal.classList.remove('active');
+        // Wait for animation to finish before clearing
+        setTimeout(() => {
+          document.getElementById('modal-content').innerHTML = '';
+        }, 300);
+      }
+    };
+
+    // Close modal when clicking outside
+    document.getElementById('global-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'global-modal') {
+        UI.closeModal();
+      }
+    });
+
+    /* ==========================================================================
+       6. ROUTER & VIEW MANAGEMENT
+       ========================================================================== */
+    const Router = {
+      currentView: 'banking',
+
+      navigate(viewId) {
+        // Update view classes
+        document.querySelectorAll('.view').forEach(v => {
+          v.classList.remove('active');
+        });
+        
+        const targetView = document.getElementById('view-' + viewId);
+        if (targetView) {
+          targetView.classList.add('active');
+          window.scrollTo(0, 0);
+        }
+
+        // Update Nav UI
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.toggle('active', item.dataset.target === viewId);
+        });
+
+        // Handle body background colors for dark mode views
+        const body = document.body;
+        const nav = document.getElementById('bottom-nav');
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+        if (viewId === 'crypto') {
+          body.style.backgroundColor = 'var(--bg-dark)';
+          nav.classList.add('dark-mode');
+          themeMeta.content = '#000000';
+        } else {
+          body.style.backgroundColor = 'var(--bg-light)';
+          nav.classList.remove('dark-mode');
+          themeMeta.content = '#f3f4f6';
+        }
+
+        this.currentView = viewId;
+
+        // Specific view hooks
+        if (viewId === 'chat') {
+          setTimeout(() => document.getElementById('chat-input').focus(), 100);
+          // Scroll to bottom of chat
+          const chatMsgs = document.getElementById('chat-messages');
+          chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }
+      }
+    };
+
+    // Bind nav clicks
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => Router.navigate(item.dataset.target));
+    });
+
+    /* ==========================================================================
+       7. RENDERERS (Building the UI)
+       ========================================================================== */
+    const Renderer = {
+      // Render Banking View (Image 4)
+      renderBanking(user) {
+        // Greeting
+        const hr = new Date().getHours();
+        let greeting = 'Good evening';
+        if (hr < 12) greeting = 'Good morning';
+        else if (hr < 18) greeting = 'Good afternoon';
+        
+        document.getElementById('greeting-text').textContent = `${greeting}, ${user.username}`;
+
+        // Card info
+        document.getElementById('banking-card-num').textContent = user.accounts.checking.number;
+
+        // Animate balance
+        const balEl = document.getElementById('banking-balance');
+        Utils.animateValue(balEl, 0, user.accounts.checking.balance, 1000);
+
+        // Render Accounts List
+        const accList = document.getElementById('banking-accounts');
+        accList.innerHTML = '';
+
+        Object.values(user.accounts).forEach(acc => {
+          const isNegative = acc.balance < 0;
+          const formattedBal = Utils.formatCurrency(acc.balance);
+          
+          const html = `
+            <div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm border border-gray-100 cursor-pointer active:scale-95 transition-transform" onclick="UI.showToast('Viewing ${acc.name} details')">
+              <div>
+                <p class="font-bold text-[15px] text-gray-900">${acc.name}</p>
+                <p class="text-xs text-gray-500 font-medium">••••${acc.number}</p>
+              </div>
+              <p class="font-bold text-[15px] ${isNegative ? 'text-gray-900' : 'text-gray-900'}">${formattedBal}</p>
+            </div>
+          `;
+          accList.insertAdjacentHTML('beforeend', html);
+        });
+      },
+
+      // Render Analytics View (Image 1)
+      renderAnalytics() {
+        const chartContainer = document.getElementById('analytics-chart');
+        // Generate two datasets for the double line
+        const data1 = ChartEngine.generateTrendData(30, 2, 30);
+        const data2 = ChartEngine.generateTrendData(30, 1, 40);
+        
+        // Draw SVG
+        chartContainer.innerHTML = ChartEngine.generateDoubleLineChart(data1, data2, 350, 180);
+        
+        // Add X-axis labels
+        const labelsHtml = `
+          <div class="absolute bottom-0 left-0 right-0 flex justify-between text-[10px] text-gray-400 font-medium pt-2 bg-white">
+            <span>Jun 5</span>
+            <span>Jun 20</span>
+            <span>Jul 4</span>
+          </div>
+        `;
+        chartContainer.insertAdjacentHTML('beforeend', labelsHtml);
+      },
+
+      // Render Investing View (Image 2)
+      renderInvesting(user) {
+        const inv = user.investing;
+        
+        document.getElementById('investing-total').textContent = Utils.formatCurrency(inv.total);
+
+        // Chart
+        const chartContainer = document.getElementById('investing-chart');
+        const chartData = ChartEngine.generateTrendData(50, 3, 25);
+        
+        chartContainer.innerHTML = ChartEngine.generateSmoothPath(chartData, 350, 160, '#22c55e', '#22c55e');
+
+        // Stocks List
+        const stocksList = document.getElementById('stocks-list');
+        stocksList.innerHTML = '';
+
+        inv.stocks.forEach(stock => {
+          const isUp = stock.change >= 0;
+          const colorClass = isUp ? 'text-green-500' : 'text-red-500';
+          const sign = isUp ? '+' : '';
+          
+          const html = `
+            <div class="flex items-center justify-between cursor-pointer active:opacity-70 transition-opacity" onclick="UI.showToast('Trade ${stock.symbol}')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full ${stock.color} flex items-center justify-center font-bold text-lg">
+                  ${stock.symbol[0]}
+                </div>
+                <div>
+                  <p class="font-bold text-sm text-gray-900">${stock.symbol}</p>
+                  <p class="text-xs text-gray-500 font-medium">${stock.name}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-sm text-gray-900">${Utils.formatCurrency(stock.price)}</p>
+                <p class="text-xs font-bold ${colorClass}">${sign}${stock.change.toFixed(2)}%</p>
+              </div>
+            </div>
+          `;
+          stocksList.insertAdjacentHTML('beforeend', html);
+        });
+      },
+
+      // Render Crypto View (Image 3)
+      renderCrypto(user) {
+        const crypto = user.crypto;
+        
+        document.getElementById('crypto-total').textContent = Utils.formatCurrency(crypto.total);
+
+        const list = document.getElementById('crypto-list');
+        list.innerHTML = '';
+
+        crypto.tokens.forEach(token => {
+          const isUp = token.change >= 0;
+          const colorClass = isUp ? 'text-green-500' : 'text-red-500';
+          const sign = isUp ? '+' : '-';
+          
+          // Fallback icon logic
+          let iconHtml = `<i class="fab ${token.icon} text-white"></i>`;
+          if (token.icon === 'fa-s' || token.icon === 'fa-dog' || token.icon === 'fa-c' || token.icon === 'fa-a' || token.icon === 'fa-link') {
+            // Use first letter for tokens without brand icons
+            iconHtml = `<span class="font-bold text-white">${token.symbol[0]}</span>`;
+          }
+
+          const html = `
+            <div class="bg-[#1c1c1e] rounded-2xl p-4 flex items-center justify-between border border-[#2c2c2e] cursor-pointer active:scale-[0.98] transition-transform" onclick="UI.showToast('View ${token.name}')">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full ${token.iconBg} flex items-center justify-center text-lg shadow-inner">
+                  ${iconHtml}
+                </div>
+                <div>
+                  <p class="font-bold text-sm text-white">${token.name}</p>
+                  <p class="text-[11px] text-gray-400 font-medium">${token.amount} ${token.symbol}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-sm text-white">${Utils.formatCurrency(token.price)}</p>
+                <p class="text-[11px] font-bold ${colorClass}">${sign}$${Utils.formatCurrency(Math.abs(token.change), 0).replace('$', '')}</p>
+              </div>
+            </div>
+          `;
+          list.insertAdjacentHTML('beforeend', html);
+        });
+      }
+    };
+
+    /* ==========================================================================
+       8. DEEPSEEK AI INTEGRATION & MOCK ENGINE
+       ========================================================================== */
+    const AI = {
+      chatHistory: [],
+      
+      async sendMessage(user, message) {
+        const apiKey = Store.getApiKey();
+        
+        if (!apiKey) {
+          return this.mockResponse(user, message);
+        }
+
+        // Prepare context
+        const context = `
+          User: ${user.username}
+          Checking Balance: $${user.accounts.checking.balance}
+          Savings Balance: $${user.accounts.savings.balance}
+          Crypto Portfolio: $${user.crypto.total}
+          Investing Portfolio: $${user.investing.total}
+        `;
+
+        try {
+          const response = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: 'deepseek-chat',
+              messages: [
+                { role: 'system', content: `You are LarpAI, a helpful financial assistant inside LarpBank. Context: ${context}. Keep answers brief, realistic, and helpful.` },
+                { role: 'user', content: message }
+              ],
+              temperature: 0.7
+            })
+          });
+
+          if (!response.ok) throw new Error('API Error');
+          
+          const data = await response.json();
+          return data.choices[0].message.content;
+
+        } catch (error) {
+          console.warn('DeepSeek API failed, falling back to mock.', error);
+          return this.mockResponse(user, message) + " (Note: Live AI unavailable, using local fallback)";
+        }
+      },
+
+      mockResponse(user, message) {
+        const q = message.toLowerCase();
+        
+        if (q.includes('balance') || q.includes('how much')) {
+          return `Your current checking balance is ${Utils.formatCurrency(user.accounts.checking.balance)}. You also have ${Utils.formatCurrency(user.accounts.savings.balance)} in savings.`;
+        }
+        if (q.includes('crypto') || q.includes('bitcoin') || q.includes('ethereum')) {
+          return `Your crypto portfolio is currently valued at ${Utils.formatCurrency(user.crypto.total)}. Your largest holding is Bitcoin at ${user.crypto.tokens[0].amount} BTC.`;
+        }
+        if (q.includes('stock') || q.includes('invest') || q.includes('portfolio')) {
+          return `Your stock portfolio is up 6.84% all time, currently sitting at ${Utils.formatCurrency(user.investing.total)}. You have ${Utils.formatCurrency(user.investing.buyingPower)} in buying power.`;
+        }
+        if (q.includes('transaction') || q.includes('spent') || q.includes('recent')) {
+          const t = user.transactions[0];
+          return `Your most recent transaction was ${t.description} for ${Utils.formatCurrency(Math.abs(t.amount))} on ${Utils.formatDateShort(t.date)}.`;
+        }
+        if (q.includes('hello') || q.includes('hi')) {
+          return `Hello ${user.username}! How can I help you with your finances today?`;
+        }
+        
+        return "I can help you check your balances, review recent transactions, or analyze your crypto and stock portfolios. What would you like to know?";
+      }
+    };
+
+    /* ==========================================================================
+       9. APP INITIALIZATION & AUTH LOGIC
+       ========================================================================== */
+    let isSignupMode = false;
+
+    // DOM Elements
+    const authView = document.getElementById('view-auth');
+    const appContainer = document.getElementById('app-container');
+    const authForm = document.getElementById('auth-form');
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+    const authSubmit = document.getElementById('auth-submit');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    // Tab Switching
+    tabLogin.addEventListener('click', () => {
+      isSignupMode = false;
+      tabLogin.className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all';
+      tabSignup.className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all';
+      authSubmit.textContent = 'Sign In';
+    });
+
+    tabSignup.addEventListener('click', () => {
+      isSignupMode = true;
+      tabSignup.className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all';
+      tabLogin.className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all';
+      authSubmit.textContent = 'Create Account';
+    });
+
+    // Auth Form Submit
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const usernameInput = document.getElementById('username').value.trim();
+      const passwordInput = document.getElementById('password').value;
+
+      if (!usernameInput || !passwordInput) {
+        UI.showToast('Please fill in all fields', 'error');
+        return;
+      }
+
+      const users = Store.getUsers();
+
+      if (isSignupMode) {
+        // Sign Up
+        if (users.find(u => u.username.toLowerCase() === usernameInput.toLowerCase())) {
+          UI.showToast('Username already taken', 'error');
+          return;
+        }
+
+        const newUser = DataGenerator.createUser(usernameInput, passwordInput);
+        users.push(newUser);
+        Store.saveUsers(users);
+        Store.setSession(usernameInput);
+        
+        UI.showToast('Account created successfully!', 'success');
+        initializeApp(newUser);
+
+      } else {
+        // Login
+        const user = users.find(u => u.username === usernameInput && u.password === passwordInput);
+        if (!user) {
+          UI.showToast('Invalid username or password', 'error');
+          return;
+        }
+
+        Store.setSession(usernameInput);
+        UI.showToast('Welcome back!', 'success');
+        initializeApp(user);
+      }
+    });
+
+    // Initialize the App UI
+    function initializeApp(user) {
+      // Hide Auth, Show App
+      authView.classList.remove('active');
+      appContainer.classList.remove('hidden');
+
+      // Populate Settings/Profile
+      document.getElementById('settings-username').textContent = user.username;
+      document.getElementById('settings-avatar').textContent = user.username[0].toUpperCase();
+
+      // Render all views initially
+      Renderer.renderBanking(user);
+      Renderer.renderAnalytics();
+      Renderer.renderInvesting(user);
+      Renderer.renderCrypto(user);
+
+      // Load API key into settings input
+      document.getElementById('api-key-input').value = Store.getApiKey();
+
+      // Navigate to default
+      Router.navigate('banking');
+    }
+
+    /* ==========================================================================
+       10. EVENT LISTENERS FOR APP FEATURES
+       ========================================================================== */
+
+    // Settings - Save API Key
+    document.getElementById('save-api-key').addEventListener('click', () => {
+      const key = document.getElementById('api-key-input').value.trim();
+      if (key) {
+        Store.setApiKey(key);
+        UI.showToast('API key saved successfully', 'success');
+      } else {
+        UI.showToast('Please enter a valid key', 'error');
+      }
+    });
+
+    // Settings - Remove API Key
+    document.getElementById('remove-api-key').addEventListener('click', () => {
+      Store.setApiKey('');
+      document.getElementById('api-key-input').value = '';
+      UI.showToast('API key removed', 'info');
+    });
+
+    // Settings - Clear Data
+    document.getElementById('clear-data-btn').addEventListener('click', () => {
+      if (confirm('Are you absolutely sure? This will delete all your fake money and settings.')) {
+        Store.clearAll();
+        location.reload();
+      }
+    });
+
+    // Settings - Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      Store.clearSession();
+      location.reload();
+    });
+
+    // Chat Form Submit
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      // Clear input
+      chatInput.value = '';
+
+      // Add user message to UI
+      chatMessages.insertAdjacentHTML('beforeend', `
+        <div class="flex justify-end">
+          <div class="bubble-user px-4 py-3 text-sm shadow-sm max-w-[85%]">
+            ${message}
+          </div>
+        </div>
+      `);
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Add typing indicator
+      const typingId = 'typing-' + Date.now();
+      chatMessages.insertAdjacentHTML('beforeend', `
+        <div class="flex justify-start" id="${typingId}">
+          <div class="bubble-ai px-4 py-3 text-sm text-gray-400 shadow-sm flex items-center gap-1">
+            <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+            <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+            <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+          </div>
+        </div>
+      `);
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      const user = Store.getSessionUser();
+      
+      // Get response from AI
+      const responseText = await AI.sendMessage(user, message);
+
+      // Remove typing indicator
+      document.getElementById(typingId).remove();
+
+      // Add AI response to UI
+      chatMessages.insertAdjacentHTML('beforeend', `
+        <div class="flex justify-start">
+          <div class="bubble-ai px-4 py-3 text-sm text-gray-700 shadow-sm max-w-[85%] leading-relaxed">
+            ${responseText.replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `);
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    /* ==========================================================================
+       11. STARTUP LOGIC
+       ========================================================================== */
+    (function boot() {
+      // Check if user is already logged in
+      const activeUser = Store.getSessionUser();
+      
+      if (activeUser) {
+        initializeApp(activeUser);
+      } else {
+        // Show auth view
+        authView.classList.add('active');
+        appContainer.classList.add('hidden');
+      }
+    })();
+
+  </script>
+</body>
+</html>
