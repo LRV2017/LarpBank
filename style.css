@@ -4,3 +4,7 @@
 .mini-bank-card.plum,.large-bank-card.plum{background:linear-gradient(135deg,#40304e,#80648e)}
 .mini-bank-card.forest,.large-bank-card.forest{background:linear-gradient(135deg,#193d31,#477a60)}
 .auth-view.view.active{display:grid}
+
+/* Realistic account-detail and statement surfaces */
+.account-status-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #dcebe2;background:#f2f8f4;color:#286b48;border-radius:99px;padding:6px 10px;font-size:10px;font-weight:800}.account-status-pill i{width:6px;height:6px;border-radius:50%;background:#319765}.bank-details-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 16px;padding:5px 0 18px}.bank-details-grid>div{display:grid;gap:6px;min-width:0}.bank-details-grid span{font-size:10px;color:var(--muted)}.bank-details-grid b{font-size:12px;font-weight:700;overflow-wrap:anywhere}.bank-details-grid b small{font-size:8px;letter-spacing:.08em;color:#a16a35;margin-left:3px}.demo-detail-note{border-top:1px solid var(--line);padding-top:13px;margin:0;color:var(--muted);font-size:10px;line-height:1.6}.demo-detail-note i{margin-right:5px;color:var(--accent)}
+@media(max-width:700px){.bank-details-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:17px 12px}}
