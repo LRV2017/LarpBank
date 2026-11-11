@@ -1,485 +1,87 @@
 'use strict';
 
-const Utils = {
-  formatCurrency(amount, decimals = 2) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(amount);
-  },
-  randomRange(min, max) { return Math.random() * (max - min) + min; },
-  generateUUID() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); return v.toString(16); }); },
-  animateValue(element, start, end, duration = 800) {
-    let startTimestamp = null;
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      element.textContent = this.formatCurrency(start + (end - start) * eased);
-      if (progress < 1) window.requestAnimationFrame(step);
-    };
-    window.requestAnimationFrame(step);
-  }
-};
-
+const $ = (s, root=document) => root.querySelector(s);
+const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const Store = {
-  USERS_KEY: 'larpbank_users_v5',
-  SESSION_KEY: 'larpbank_session_v5',
-  getUsers() { try { return JSON.parse(localStorage.getItem(this.USERS_KEY)) || []; } catch { return []; } },
-  saveUsers(users) { localStorage.setItem(this.USERS_KEY, JSON.stringify(users)); },
-  getSessionUser() { const u = localStorage.getItem(this.SESSION_KEY); return u ? this.getUsers().find(x => x.username === u) : null; },
-  setSession(u) { localStorage.setItem(this.SESSION_KEY, u); },
-  clearSession() { localStorage.removeItem(this.SESSION_KEY); },
-  updateUser(updatedUser) {
-    const users = this.getUsers();
-    const idx = users.findIndex(u => u.username === updatedUser.username);
-    if (idx > -1) { users[idx] = updatedUser; this.saveUsers(users); }
-  }
+  USERS_KEY:'larpbank_users_v5', SESSION_KEY:'larpbank_session_v5',
+  users(){try{return JSON.parse(localStorage.getItem(this.USERS_KEY))||[]}catch{return[]}},
+  save(users){localStorage.setItem(this.USERS_KEY,JSON.stringify(users))},
+  session(){return localStorage.getItem(this.SESSION_KEY)},
+  user(){return this.users().find(u=>u.username===this.session())||null},
+  setSession(name){localStorage.setItem(this.SESSION_KEY,name)},
+  update(user,oldName=user.username){const users=this.users();const i=users.findIndex(u=>u.username===oldName);if(i>=0){users[i]=user;this.save(users);this.setSession(user.username)}},
+  logout(){localStorage.removeItem(this.SESSION_KEY)}
 };
-
-const DataGenerator = {
-  createUser(username, password) {
-    return {
-      id: Utils.generateUUID(), username, password,
-      accounts: {
-        checking: { name: 'Checking', balance: 15420.50, number: '7527' },
-        savings: { name: 'Savings', balance: 50000.00, number: '9538' },
-        platinum: { name: 'Platinum Card', balance: -134.88, number: '7537' }
-      },
-      investing: {
-        buyingPower: 1500.00,
-        stocks: [
-          { symbol: 'AAPL', name: 'Apple Inc.', price: 175.50, change: 0.84, qty: 10, color: 'bg-gray-100 text-gray-800' },
-          { symbol: 'TSLA', name: 'Tesla, Inc.', price: 240.30, change: -1.42, qty: 5, color: 'bg-red-100 text-red-500' },
-          { symbol: 'NVDA', name: 'NVIDIA Corporation', price: 450.20, change: 2.73, qty: 2, color: 'bg-green-100 text-green-600' }
-        ]
-      },
-      crypto: {
-        tokens: [
-          { symbol: 'BTC', name: 'Bitcoin', amount: 0.5, price: 64000.00, change: 958.37, iconBg: 'bg-[#f7931a]', icon: 'fa-bitcoin' },
-          { symbol: 'ETH', name: 'Ethereum', amount: 2.1, price: 3400.50, change: 150.12, iconBg: 'bg-[#627eea]', icon: 'fa-ethereum' },
-          { symbol: 'SOL', name: 'Solana', amount: 15.0, price: 145.00, change: -5.52, iconBg: 'bg-black border border-white', icon: 'fa-s' }
-        ]
-      },
-      transactions: []
-    };
-  }
-};
-
-const ChartEngine = {
-  generateSmoothPath(data, width, height, stroke, fillGradient = null) {
-    if (!data || data.length === 0) return '';
-    const max = Math.max(...data), min = Math.min(...data), range = max - min || 1, stepX = width / (data.length - 1);
-    const points = data.map((val, i) => ({ x: i * stepX, y: height - ((val - min) / range) * height }));
-    let d = `M ${points[0].x},${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[i - 1] || points[i], p1 = points[i], p2 = points[i + 1], p3 = points[i + 2] || p2;
-      const cp1x = p1.x + (p2.x - p0.x) / 6, cp1y = p1.y + (p2.y - p0.y) / 6, cp2x = p2.x - (p3.x - p1.x) / 6, cp2y = p2.y - (p3.y - p1.y) / 6;
-      d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
-    }
-    let svg = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full" preserveAspectRatio="none">`;
-    if (fillGradient) {
-      const id = 'grad-' + Utils.generateUUID();
-      svg += `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${fillGradient}" stop-opacity="0.25"/><stop offset="100%" stop-color="${fillGradient}" stop-opacity="0"/></linearGradient></defs>`;
-      svg += `<path d="${d} L ${width},${height} L 0,${height} Z" fill="url(#${id})" />`;
-    }
-    svg += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>`;
-    return svg;
-  },
-  generateTrendData(points) { let val = 50; return Array.from({length: points}, () => { val += (Math.random() - 0.5) * 20; return Math.max(5, Math.min(95, val)); }); }
-};
-
-const UI = {
-  showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    let icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-    toast.innerHTML = `<i class="fas ${icon} mr-2"></i> ${message}`;
-    if (type === 'error') toast.style.background = 'var(--accent-red)';
-    if (type === 'success') toast.style.background = 'var(--accent-green)';
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-  },
-  openModal(html) { document.getElementById('modal-content').innerHTML = html; document.getElementById('global-modal').classList.add('active'); },
-  closeModal() { document.getElementById('global-modal').classList.remove('active'); }
-};
-
-document.getElementById('global-modal').addEventListener('click', (e) => { if (e.target.id === 'global-modal') UI.closeModal(); });
-
-const Router = {
-  navigate(viewId) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + viewId).classList.add('active');
-    window.scrollTo(0, 0);
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.target === viewId));
-    
-    if (viewId === 'crypto') {
-      document.body.style.backgroundColor = 'var(--bg-dark)';
-      document.getElementById('bottom-nav').classList.add('dark-mode');
-    } else {
-      document.body.style.backgroundColor = 'var(--bg-light)';
-      document.getElementById('bottom-nav').classList.remove('dark-mode');
-    }
-    if (viewId === 'chat') {
-      setTimeout(() => document.getElementById('chat-input').focus(), 100);
-      const chatMsgs = document.getElementById('chat-messages');
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }
-  }
-};
-
-document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => Router.navigate(item.dataset.target)));
-
-const Actions = {
-  // Deposit funds into checking
-  deposit(amount) {
-    const user = Store.getSessionUser();
-    user.accounts.checking.balance += amount;
-    user.transactions.unshift({ id: Utils.generateUUID(), date: new Date().toISOString(), description: 'Mobile Deposit', category: 'Income', amount: amount });
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Deposited ${Utils.formatCurrency(amount)}`, 'success');
-  },
-  
-  // Transfer funds (deduct)
-  transfer(amount, recipient) {
-    const user = Store.getSessionUser();
-    if (user.accounts.checking.balance < amount) return UI.showToast('Insufficient funds', 'error');
-    user.accounts.checking.balance -= amount;
-    user.transactions.unshift({ id: Utils.generateUUID(), date: new Date().toISOString(), description: `Transfer to ${recipient}`, category: 'Transfer', amount: -amount });
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Sent ${Utils.formatCurrency(amount)} to ${recipient}`, 'success');
-  },
-
-  // Dev Tool: Set exact balance
-  setBalance(amount) {
-    const user = Store.getSessionUser();
-    user.accounts.checking.balance = amount;
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Balance set to ${Utils.formatCurrency(amount)}`, 'success');
-  },
-
-  // Dev Tool: Add 10k
-  addFunds() {
-    const user = Store.getSessionUser();
-    user.accounts.checking.balance += 10000;
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Added $10,000 to Checking`, 'success');
-  },
-
-  // Buy Stock
-  buyStock(symbol, amount) {
-    const user = Store.getSessionUser();
-    const stock = user.investing.stocks.find(s => s.symbol === symbol);
-    const totalCost = stock.price * amount;
-    
-    if (user.accounts.checking.balance < totalCost) return UI.showToast('Insufficient funds in checking', 'error');
-    
-    user.accounts.checking.balance -= totalCost;
-    stock.qty += amount;
-    user.transactions.unshift({ id: Utils.generateUUID(), date: new Date().toISOString(), description: `Bought ${amount} shares of ${symbol}`, category: 'Investing', amount: -totalCost });
-    
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Bought ${amount} shares of ${symbol}`, 'success');
-  },
-
-  // Buy Crypto
-  buyCrypto(symbol, amount) {
-    const user = Store.getSessionUser();
-    const token = user.crypto.tokens.find(t => t.symbol === symbol);
-    const totalCost = token.price * amount;
-    
-    if (user.accounts.checking.balance < totalCost) return UI.showToast('Insufficient funds in checking', 'error');
-    
-    user.accounts.checking.balance -= totalCost;
-    token.amount += amount;
-    user.transactions.unshift({ id: Utils.generateUUID(), date: new Date().toISOString(), description: `Bought ${amount} ${symbol}`, category: 'Crypto', amount: -totalCost });
-    
-    Store.updateUser(user);
-    UI.closeModal();
-    Renderer.renderAll(user);
-    UI.showToast(`Bought ${amount} ${symbol}`, 'success');
-  }
-};
-
-const App = {
-  openModal(type) {
-    const user = Store.getSessionUser();
-    
-    if (type === 'transfer') {
-      UI.openModal(`
-        <h3 class="text-xl font-bold mb-4 text-gray-900">Send Money</h3>
-        <input type="text" id="modal-recipient" placeholder="Recipient Name" class="modal-input">
-        <input type="number" id="modal-amount" placeholder="Amount ($)" class="modal-input">
-        <button class="modal-btn" onclick="Actions.transfer(parseFloat(document.getElementById('modal-amount').value), document.getElementById('modal-recipient').value)">Send Funds</button>
-      `);
-    } else if (type === 'deposit') {
-      UI.openModal(`
-        <h3 class="text-xl font-bold mb-4 text-gray-900">Deposit Funds</h3>
-        <input type="number" id="modal-amount" placeholder="Amount ($)" class="modal-input">
-        <button class="modal-btn bg-green-500" onclick="Actions.deposit(parseFloat(document.getElementById('modal-amount').value))">Deposit to Checking</button>
-      `);
-    } else if (type === 'devSetBalance') {
-      UI.openModal(`
-        <h3 class="text-xl font-bold mb-4 text-blue-900">Dev Tools: Set Balance</h3>
-        <p class="text-xs text-gray-500 mb-4">Overwrite your checking balance instantly.</p>
-        <input type="number" id="modal-balance" placeholder="New Balance ($)" value="${user.accounts.checking.balance}" class="modal-input">
-        <button class="modal-btn bg-blue-600" onclick="Actions.setBalance(parseFloat(document.getElementById('modal-balance').value))">Update Balance</button>
-      `);
-    } else if (type === 'devAddFunds') {
-      Actions.addFunds();
-    } else if (type === 'editProfile') {
-      UI.openModal(`
-        <h3 class="text-xl font-bold mb-4 text-gray-900">Edit Profile</h3>
-        <label class="text-xs font-semibold text-gray-500">Username</label>
-        <input type="text" id="modal-new-username" value="${user.username}" class="modal-input mt-1">
-        <label class="text-xs font-semibold text-gray-500 mt-2 block">New Password</label>
-        <input type="password" id="modal-new-password" placeholder="Leave blank to keep current" class="modal-input mt-1">
-        <button class="modal-btn" onclick="
-          const users = Store.getUsers();
-          const oldName = '${user.username}';
-          user.username = document.getElementById('modal-new-username').value;
-          user.password = document.getElementById('modal-new-password').value || user.password;
-          Store.saveUsers(users.map(u => u.username === oldName ? user : u));
-          if (oldName !== user.username) Store.setSession(user.username);
-          UI.closeModal(); location.reload();
-        ">Save Changes</button>
-      `);
-    }
-  }
-};
-
+const defaults = (username,password)=>({
+ id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),username,password,displayName:username,
+ accounts:{checking:{name:'Checking',balance:15420.5,number:'7527',type:'checking'},savings:{name:'Savings',balance:50000,number:'9538',type:'savings'},platinum:{name:'Platinum Card',balance:-134.88,number:'7537',type:'credit'}},
+ investing:{stocks:[{symbol:'AAPL',name:'Apple Inc.',price:175.5,change:.84,qty:10},{symbol:'TSLA',name:'Tesla, Inc.',price:240.3,change:-1.42,qty:5},{symbol:'NVDA',name:'NVIDIA Corporation',price:450.2,change:2.73,qty:2}]},
+ crypto:{tokens:[{symbol:'BTC',name:'Bitcoin',amount:.5,price:64000,change:958.37},{symbol:'ETH',name:'Ethereum',amount:2.1,price:3400.5,change:150.12},{symbol:'SOL',name:'Solana',amount:15,price:145,change:-5.52}]},
+ transactions:[{id:'seed-1',date:new Date().toISOString(),description:'Initial deposit',category:'Income',amount:15000},{id:'seed-2',date:new Date(Date.now()-86400000).toISOString(),description:'Apple Store',category:'Shopping',amount:-1299}],
+ preferences:{theme:'light',accent:'#171717',currency:'USD',compact:false,hideBalances:false,notifications:true,cardStyle:'midnight',cardLocked:false,online:true,tap:true},notifications:[]
+});
+const currency = n => new Intl.NumberFormat('en-US',{style:'currency',currency:(Store.user()?.preferences?.currency||'USD'),maximumFractionDigits:2}).format(Number(n)||0);
+const totalBalance = u => Object.values(u.accounts).reduce((sum,a)=>sum+a.balance,0);
+const sum = (arr,fn)=>arr.reduce((s,x)=>s+fn(x),0);
+const toast = (message,type='')=>{const el=document.createElement('div');el.className='toast '+type;el.textContent=message;$('#toast-container').append(el);setTimeout(()=>el.remove(),2800)};
+const save = u=>{Store.update(u);Renderer.all(u)};
+const addTransaction = (u,description,amount,category)=>{u.transactions.unshift({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),date:new Date().toISOString(),description,amount,category});u.notifications.unshift({title:description,detail:(amount>=0?'+':'')+currency(amount)+' · Just now'});u.transactions=u.transactions.slice(0,500);save(u)};
+const svgChart = (values,height=150)=>{if(!values.length)return '<div class="empty-state">No activity to chart yet.</div>';const max=Math.max(...values,1),min=Math.min(...values,0),range=max-min||1,w=600;const pts=values.map((v,i)=>[i*w/Math.max(1,values.length-1),height-12-(v-min)/range*(height-24)]);const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');return '<svg viewBox="0 0 600 '+height+'" preserveAspectRatio="none" role="img" aria-label="Activity chart"><defs><linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".18"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs><path d="'+d+' L 600 '+height+' L 0 '+height+' Z" fill="url(#chart-fill)"/><path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+const iconFor = cat=>({Income:'fa-arrow-down',Transfer:'fa-arrow-right-arrow-left',Shopping:'fa-bag-shopping',Dining:'fa-utensils',Bills:'fa-file-invoice-dollar',Investing:'fa-chart-line',Crypto:'fa-bitcoin',Deposit:'fa-arrow-down',Payment:'fa-credit-card'}[cat]||'fa-receipt');
 const Renderer = {
-  renderAll(user) {
-    this.renderBanking(user);
-    this.renderAnalytics(user);
-    this.renderInvesting(user);
-    this.renderCrypto(user);
-  },
-  
-  renderBanking(user) {
-    const hr = new Date().getHours();
-    document.getElementById('greeting-text').textContent = `Good ${hr < 12 ? 'morning' : hr < 18 ? 'afternoon' : 'evening'}, ${user.username}`;
-    document.getElementById('banking-card-num').textContent = `•••• ${user.accounts.checking.number}`;
-    document.getElementById('banking-balance').textContent = Utils.formatCurrency(user.accounts.checking.balance);
-    
-    const accList = document.getElementById('banking-accounts');
-    accList.innerHTML = Object.values(user.accounts).map(acc => `
-      <div class="bg-white rounded-2xl p-4 flex justify-between items-center shadow-sm border border-gray-100">
-        <div><p class="font-bold text-[15px] text-gray-900">${acc.name}</p><p class="text-xs text-gray-500 font-medium">••••${acc.number}</p></div>
-        <p class="font-bold text-[15px] text-gray-900">${Utils.formatCurrency(acc.balance)}</p>
-      </div>
-    `).join('');
-
-    const txList = document.getElementById('banking-transactions');
-    txList.innerHTML = user.transactions.slice(0, 3).map(tx => `
-      <div class="flex justify-between items-center py-2 border-b border-gray-100">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-receipt text-gray-500 text-xs"></i></div>
-          <div><p class="text-sm font-bold text-gray-900">${tx.description}</p><p class="text-[10px] text-gray-500">${new Date(tx.date).toLocaleDateString()}</p></div>
-        </div>
-        <p class="text-sm font-bold ${tx.amount > 0 ? 'text-green-500' : 'text-gray-900'}">${tx.amount > 0 ? '+' : ''}${Utils.formatCurrency(tx.amount)}</p>
-      </div>
-    `).join('') || '<p class="text-sm text-gray-500">No recent transactions</p>';
-  },
-
-  renderAnalytics(user) {
-    const spend = user.transactions.filter(t => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
-    const income = user.transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-    document.getElementById('analytics-total-spend').textContent = Utils.formatCurrency(spend);
-    document.getElementById('analytics-total-income').textContent = Utils.formatCurrency(income);
-    document.getElementById('analytics-chart').innerHTML = ChartEngine.generateSmoothPath(ChartEngine.generateTrendData(30), 350, 180, '#3b82f6', '#3b82f6');
-  },
-
-  renderInvesting(user) {
-    let total = 0;
-    user.investing.stocks.forEach(s => { total += s.price * s.qty; });
-    
-    document.getElementById('investing-total').textContent = Utils.formatCurrency(total);
-    document.getElementById('investing-buying-power').textContent = Utils.formatCurrency(user.accounts.checking.balance);
-    document.getElementById('investing-chart').innerHTML = ChartEngine.generateSmoothPath(ChartEngine.generateTrendData(40), 350, 160, '#22c55e', '#22c55e');
-
-    const stocksList = document.getElementById('stocks-list');
-    stocksList.innerHTML = user.investing.stocks.map(stock => `
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full ${stock.color} flex items-center justify-center font-bold text-lg">${stock.symbol[0]}</div>
-          <div><p class="font-bold text-sm text-gray-900">${stock.symbol}</p><p class="text-xs text-gray-500 font-medium">${stock.qty} shares</p></div>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-sm text-gray-900">${Utils.formatCurrency(stock.price * stock.qty)}</p>
-          <button class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded font-bold mt-1" onclick="App.openModal('buyStock-${stock.symbol}')">Buy</button>
-        </div>
-      </div>
-    `).join('');
-    
-    // Attach Buy Modal logic dynamically
-    user.investing.stocks.forEach(stock => {
-        App.openModal = (function(orig) {
-            return function(type) {
-                if(type === 'buyStock-' + stock.symbol) {
-                    UI.openModal(`
-                        <h3 class="text-xl font-bold mb-4 text-gray-900">Buy ${stock.symbol}</h3>
-                        <p class="text-xs text-gray-500 mb-4">Price: ${Utils.formatCurrency(stock.price)}</p>
-                        <input type="number" id="modal-qty" placeholder="Quantity" value="1" class="modal-input">
-                        <button class="modal-btn" onclick="Actions.buyStock('${stock.symbol}', parseInt(document.getElementById('modal-qty').value))">Confirm Purchase</button>
-                    `);
-                } else { orig.call(App, type); }
-            }
-        })(App.openModal);
-    });
-  },
-
-  renderCrypto(user) {
-    let total = 0;
-    user.crypto.tokens.forEach(t => { total += t.price * t.amount; });
-    document.getElementById('crypto-total').textContent = Utils.formatCurrency(total);
-
-    const list = document.getElementById('crypto-list');
-    list.innerHTML = user.crypto.tokens.map(token => {
-      const isUp = token.change >= 0;
-      let iconHtml = token.icon === 'fa-bitcoin' || token.icon === 'fa-ethereum' ? `<i class="fab ${token.icon} text-white"></i>` : `<span class="font-bold text-white">${token.symbol[0]}</span>`;
-      return `
-        <div class="bg-[#1c1c1e] rounded-2xl p-4 flex items-center justify-between border border-[#2c2c2e]">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full ${token.iconBg} flex items-center justify-center text-lg shadow-inner">${iconHtml}</div>
-            <div><p class="font-bold text-sm text-white">${token.name}</p><p class="text-[11px] text-gray-400 font-medium">${token.amount} ${token.symbol}</p></div>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-sm text-white">${Utils.formatCurrency(token.price * token.amount)}</p>
-            <button class="text-[10px] bg-[#2c2c2e] text-white px-2 py-0.5 rounded font-bold mt-1 border border-[#3c3c3e]" onclick="App.openModal('buyCrypto-${token.symbol}')">Buy</button>
-          </div>
-        </div>`;
-    }).join('');
-
-    // Attach Buy Modal logic dynamically
-    user.crypto.tokens.forEach(token => {
-        App.openModal = (function(orig) {
-            return function(type) {
-                if(type === 'buyCrypto-' + token.symbol) {
-                    UI.openModal(`
-                        <h3 class="text-xl font-bold mb-4 text-gray-900">Buy ${token.name}</h3>
-                        <p class="text-xs text-gray-500 mb-4">Price: ${Utils.formatCurrency(token.price)}</p>
-                        <input type="number" id="modal-qty" placeholder="Amount (e.g. 0.5)" value="1" class="modal-input">
-                        <button class="modal-btn" onclick="Actions.buyCrypto('${token.symbol}', parseFloat(document.getElementById('modal-qty').value))">Confirm Purchase</button>
-                    `);
-                } else { orig.call(App, type); }
-            }
-        })(App.openModal);
-    });
-  }
+ all(u){this.banking(u);this.analytics(u);this.assets(u);this.settings(u);this.transactions(u);},
+ banking(u){
+  const balance=totalBalance(u);$('#banking-balance').textContent=currency(balance);$('#greeting-text').textContent='Welcome back, '+(u.displayName||u.username);$('#today-label').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+  $('#banking-card-num').textContent='•••• '+u.accounts.checking.number;$('#card-holder').textContent=(u.displayName||u.username).toUpperCase();$('#card-status').textContent=u.preferences.cardLocked?'Paused':'Active';
+  $('#banking-accounts').innerHTML=Object.values(u.accounts).map(a=>'<div class="account-row"><div class="account-icon"><i class="fa-solid '+(a.type==='savings'?'fa-piggy-bank':a.type==='credit'?'fa-credit-card':'fa-wallet')+'"></i></div><div class="account-meta"><b>'+esc(a.name)+'</b><span>•••• '+esc(a.number)+' · '+(a.type==='credit'?'Credit account':'Personal account')+'</span></div><div class="account-value">'+currency(a.balance)+'</div></div>').join('');
+  $('#banking-transactions').innerHTML=this.txRows(u.transactions.slice(0,5));
+  const income=sum(u.transactions.filter(t=>t.amount>0),t=>t.amount),expense=sum(u.transactions.filter(t=>t.amount<0),t=>Math.abs(t.amount));
+  $('#cashflow-income').textContent=currency(income);$('#cashflow-expense').textContent=currency(expense);$('#cashflow-net').textContent=currency(income-expense);$('#cashflow-chart').innerHTML=svgChart(this.dailyFlow(u,14),65);
+  $('#mini-bank-card').className='mini-bank-card '+u.preferences.cardStyle;
+  if(u.preferences.hideBalances){$('#banking-balance').textContent='••••••';$('#cashflow-net').textContent='••••••'}
+ },
+ txRows(list){return list.length?list.map(t=>'<div class="transaction-row" data-tx="'+esc(t.id)+'"><div class="transaction-icon"><i class="fa-solid '+iconFor(t.category)+'"></i></div><div class="transaction-meta"><b>'+esc(t.description)+'</b><span>'+esc(t.category)+' · '+new Date(t.date).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})+'</span></div><div class="transaction-amount '+(t.amount>0?'positive':'negative')+'">'+(t.amount>0?'+':'−')+currency(Math.abs(t.amount))+'</div></div>').join(''):'<div class="empty-state">No transactions yet. Make a deposit or transfer to get started.</div>'},
+ dailyFlow(u,days){const start=Date.now()-days*86400000;return Array.from({length:days},(_,i)=>sum(u.transactions.filter(t=>new Date(t.date).getTime()>=start+i*86400000&&new Date(t.date).getTime()<start+(i+1)*86400000),t=>t.amount))},
+ transactions(u){const q=($('#transaction-search')?.value||'').toLowerCase(),filter=$('#transaction-filter')?.value||'all';const list=u.transactions.filter(t=>(!q||(t.description+' '+t.category).toLowerCase().includes(q))&&(filter==='all'||(filter==='income'?t.amount>0:t.amount<0)));$('#all-transactions').innerHTML=this.txRows(list)},
+ analytics(u){const income=sum(u.transactions.filter(t=>t.amount>0),t=>t.amount),spend=sum(u.transactions.filter(t=>t.amount<0),t=>-t.amount);$('#analytics-total-income').textContent=currency(income);$('#analytics-total-spend').textContent=currency(spend);$('#analytics-net').textContent=currency(income-spend);$('#analytics-count').textContent=u.transactions.length;const days=Number($('#analytics-period')?.value||30);$('#analytics-chart').innerHTML=svgChart(this.dailyFlow(u,days),220);const cats={};u.transactions.filter(t=>t.amount<0).forEach(t=>cats[t.category]=(cats[t.category]||0)+Math.abs(t.amount));const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);$('#category-breakdown').innerHTML=entries.length?entries.map(([name,value])=>'<div class="category-row"><span>'+esc(name)+'</span><div class="category-track"><div class="category-fill" style="width:'+Math.max(2,value/Math.max(...entries.map(x=>x[1]))*100)+'%"></div></div><b>'+currency(value)+'</b></div>').join(''):'<div class="empty-state">Your spending breakdown will appear after you make purchases.</div>'},
+ assets(u){const stockTotal=sum(u.investing.stocks,s=>s.price*s.qty),cryptoTotal=sum(u.crypto.tokens,t=>t.price*t.amount);$('#investing-total').textContent=currency(stockTotal);$('#investing-buying-power').textContent=currency(u.accounts.checking.balance);$('#crypto-total').textContent=currency(cryptoTotal);$('#crypto-cash').textContent=currency(u.accounts.checking.balance);$('#stocks-list').innerHTML=u.investing.stocks.map(s=>'<div class="account-row"><div class="account-icon">'+esc(s.symbol[0])+'</div><div class="account-meta"><b>'+esc(s.symbol)+' · '+esc(s.name)+'</b><span>'+s.qty+' shares · '+currency(s.price)+' per share</span></div><div style="text-align:right"><div class="account-value">'+currency(s.qty*s.price)+'</div><button class="text-button" data-action="buy-stock" data-symbol="'+esc(s.symbol)+'">Buy shares</button></div></div>').join('');$('#crypto-list').innerHTML=u.crypto.tokens.map(t=>'<div class="account-row"><div class="account-icon"><i class="fa-brands fa-bitcoin"></i></div><div class="account-meta"><b>'+esc(t.name)+' ('+esc(t.symbol)+')</b><span>'+t.amount+' '+esc(t.symbol)+' · '+currency(t.price)+' each</span></div><div style="text-align:right"><div class="account-value">'+currency(t.amount*t.price)+'</div><button class="text-button" data-action="buy-crypto" data-symbol="'+esc(t.symbol)+'">Buy token</button></div></div>').join('')},
+ settings(u){$('#settings-username').textContent=u.username;$('#settings-display-name').textContent=u.displayName||u.username;$('#settings-avatar').textContent=(u.displayName||u.username)[0].toUpperCase();$('#sidebar-username').textContent=u.displayName||u.username;$('#sidebar-avatar').textContent=(u.displayName||u.username)[0].toUpperCase();$('#top-avatar').textContent=(u.displayName||u.username)[0].toUpperCase();$('#currency-select').value=u.preferences.currency||'USD';$('#card-lock-toggle').classList.toggle('on',u.preferences.cardLocked);$('#card-lock-toggle').setAttribute('aria-pressed',String(u.preferences.cardLocked));$('#online-toggle').classList.toggle('on',u.preferences.online);$('#online-toggle').setAttribute('aria-pressed',String(u.preferences.online));$('#tap-toggle').classList.toggle('on',u.preferences.tap);$('#tap-toggle').setAttribute('aria-pressed',String(u.preferences.tap));$('#compact-toggle').classList.toggle('on',u.preferences.compact);$('#compact-toggle').setAttribute('aria-pressed',String(u.preferences.compact));$('#privacy-toggle').classList.toggle('on',u.preferences.hideBalances);$('#privacy-toggle').setAttribute('aria-pressed',String(u.preferences.hideBalances));$('#notify-toggle').classList.toggle('on',u.preferences.notifications);$('#notify-toggle').setAttribute('aria-pressed',String(u.preferences.notifications));$$('[data-theme]').forEach(b=>b.classList.toggle('active',b.dataset.theme===u.preferences.theme));$$('[data-color]').forEach(b=>b.classList.toggle('active',b.dataset.color===u.preferences.accent));$$('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===u.preferences.cardStyle));$('#large-bank-card').className='large-bank-card '+u.preferences.cardStyle;$('#large-card-number').textContent='•••• •••• •••• '+u.accounts.checking.number;$('#card-last-four').textContent=u.accounts.checking.number;$('#large-card-holder').textContent=(u.displayName||u.username).toUpperCase();document.body.classList.toggle('compact',!!u.preferences.compact);document.documentElement.style.setProperty('--accent',u.preferences.accent||'#171717');document.body.classList.toggle('theme-dark',u.preferences.theme==='dark'||(u.preferences.theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches));}
 };
-
-const AI = {
-  async sendMessage(user, message) {
-    const apiKey = localStorage.getItem('larpbank_deepseek_v5');
-    if (!apiKey) return this.mockResponse(user, message);
-    try {
-      const response = await fetch('https://api.deepseek.com/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: [
-            { role: 'system', content: `You are LarpAI, a helpful financial assistant inside LarpBank. User: ${user.username}. Checking Balance: $${user.accounts.checking.balance}. Crypto Holdings: ${user.crypto.tokens.map(t => `${t.amount} ${t.symbol}`).join(', ')}.` },
-            { role: 'user', content: message }
-          ]
-        })
-      });
-      if (!response.ok) throw new Error();
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch { return this.mockResponse(user, message) + " (Fallback)"; }
-  },
-  mockResponse(user, message) {
-    const q = message.toLowerCase();
-    if (q.includes('balance')) return `Your checking balance is ${Utils.formatCurrency(user.accounts.checking.balance)}.`;
-    if (q.includes('crypto')) return `You currently hold ${user.crypto.tokens.map(t => `${t.amount} ${t.symbol}`).join(' and ')}.`;
-    if (q.includes('how to change') || q.includes('add money')) return "To add money, go to Settings > Larp Dev Tools and click 'Add $10,000' or 'Set Balance'.";
-    return "I can help you check your balances, crypto, or investments.";
-  }
+const Router={go(id){const target=$('#view-'+id);if(!target)return;$$('.page-view').forEach(v=>v.classList.remove('active'));target.classList.add('active');$$('[data-target]').forEach(b=>b.classList.toggle('active',b.dataset.target===id));$('#page-label').textContent=({banking:'Overview',transactions:'Transactions',analytics:'Analytics',cards:'My cards',investing:'Investments',crypto:'Crypto',settings:'Settings'}[id]||id);if(id==='transactions')Renderer.transactions(Store.user());if(id==='analytics')Renderer.analytics(Store.user());window.scrollTo({top:0,behavior:'smooth'})}};
+const Modal={
+ open(title,subtitle,body,submitLabel,handler){$('#modal-content').innerHTML='<button class="modal-close" data-action="close-modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button><h2 id="modal-title">'+esc(title)+'</h2><p class="muted">'+esc(subtitle||'')+'</p><form id="modal-form">'+body+'<div class="modal-actions"><button type="button" class="btn btn-secondary" data-action="close-modal">Cancel</button><button type="submit" class="btn btn-primary">'+esc(submitLabel||'Save changes')+'</button></div></form>';$('#global-modal').classList.add('active');$('#modal-form').onsubmit=e=>{e.preventDefault();handler(new FormData(e.currentTarget))};setTimeout(()=>$('#modal-content input')?.focus(),80)},
+ close(){$('#global-modal').classList.remove('active')}
 };
-
-let isSignupMode = false;
-document.getElementById('tab-login').onclick = () => {
-  isSignupMode = false;
-  document.getElementById('tab-login').className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all';
-  document.getElementById('tab-signup').className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all';
-  document.getElementById('auth-submit').textContent = 'Sign In';
+const App={
+ modalAmount(label='Amount',value=''){return '<label class="modal-label">'+label+'</label><input class="modal-input" name="amount" type="number" min="0.01" step="0.01" required placeholder="0.00" value="'+value+'">'},
+ transfer(){Modal.open('Send money','Move fictional funds from your checking account.','<label class="modal-label">Recipient</label><input class="modal-input" name="recipient" required maxlength="40" placeholder="Name or username">'+this.modalAmount(),'Review transfer',f=>{const u=Store.user(),amount=Number(f.get('amount')),recipient=String(f.get('recipient')).trim();if(!Number.isFinite(amount)||amount<=0||!recipient)return toast('Enter a valid recipient and amount','error');if(amount>u.accounts.checking.balance)return toast('Not enough money in checking','error');Modal.close();u.accounts.checking.balance-=amount;addTransaction(u,'Transfer to '+recipient,-amount,'Transfer');toast('Transfer completed in the demo','success')})},
+ deposit(){Modal.open('Add a deposit','Add fictional funds to your checking account.',this.modalAmount(),'Deposit funds',f=>{const u=Store.user(),amount=Number(f.get('amount'));if(!Number.isFinite(amount)||amount<=0)return toast('Enter a valid amount','error');Modal.close();u.accounts.checking.balance+=amount;addTransaction(u,'Cash deposit',amount,'Income');toast('Deposit added','success')})},
+ bill(){Modal.open('Pay a bill','Record a simulated payment from checking.','<label class="modal-label">Biller</label><input class="modal-input" name="biller" required placeholder="e.g. Electricity"><label class="modal-label">Category</label><select class="modal-input" name="category"><option>Utilities</option><option>Housing</option><option>Subscriptions</option><option>Other</option></select>'+this.modalAmount(),'Pay bill',f=>{const u=Store.user(),amount=Number(f.get('amount')),name=String(f.get('biller')).trim();if(amount<=0||!Number.isFinite(amount)||!name)return toast('Enter a valid bill and amount','error');if(amount>u.accounts.checking.balance)return toast('Not enough money in checking','error');Modal.close();u.accounts.checking.balance-=amount;addTransaction(u,'Bill payment · '+name,-amount,'Bills');toast('Bill marked as paid','success')})},
+ addAccount(){Modal.open('Add an account','Create another account in your local demo.','<label class="modal-label">Account name</label><input class="modal-input" name="name" required maxlength="30" placeholder="e.g. Travel fund"><label class="modal-label">Account type</label><select class="modal-input" name="type"><option value="savings">Savings</option><option value="checking">Checking</option></select>'+this.modalAmount('Opening balance','0'),'Create account',f=>{const u=Store.user(),name=String(f.get('name')).trim(),amount=Number(f.get('amount'));if(!name||!Number.isFinite(amount)||amount<0)return toast('Check the account details','error');const key='account_'+Date.now();u.accounts[key]={name,balance:amount,number:String(Math.floor(1000+Math.random()*9000)),type:f.get('type')};Modal.close();save(u);toast('Account created','success')})},
+ profile(){const u=Store.user();Modal.open('Edit your profile','Change how your name appears in LarpBank.','<label class="modal-label">Display name</label><input class="modal-input" name="display" required maxlength="30" value="'+esc(u.displayName||u.username)+'"><label class="modal-label">New password (optional)</label><input class="modal-input" name="password" type="password" minlength="4" placeholder="Leave blank to keep current password">','Save profile',f=>{const old=u.username;u.displayName=String(f.get('display')).trim();if(f.get('password'))u.password=f.get('password');Modal.close();Store.update(u,old);Renderer.all(u);toast('Profile updated','success')})},
+ setBalance(){const u=Store.user();Modal.open('Set checking balance','Sandbox only — this does not represent real funds.',this.modalAmount('New balance',u.accounts.checking.balance),'Update balance',f=>{const n=Number(f.get('amount'));if(!Number.isFinite(n)||n<0)return toast('Enter a valid balance','error');const delta=n-u.accounts.checking.balance;u.accounts.checking.balance=n;Modal.close();addTransaction(u,'Sandbox balance adjustment',delta,delta>=0?'Income':'Adjustment');toast('Demo balance updated','success')})},
+ buy(kind,symbol){const u=Store.user(),asset=kind==='stock'?u.investing.stocks.find(x=>x.symbol===symbol):u.crypto.tokens.find(x=>x.symbol===symbol);if(!asset)return;const isStock=kind==='stock';Modal.open('Buy '+(isStock?'shares of ':'')+asset.name,'Illustrative price: '+currency(asset.price)+' each.',this.modalAmount(isStock?'Number of shares':'Token amount','1'),'Confirm purchase',f=>{const qty=Number(f.get('amount'));if(!Number.isFinite(qty)||qty<=0||qty>100000)return toast('Enter a valid quantity','error');const cost=qty*asset.price;if(cost>u.accounts.checking.balance)return toast('Not enough money in checking','error');u.accounts.checking.balance-=cost;if(isStock)asset.qty+=qty;else asset.amount+=qty;Modal.close();addTransaction(u,'Bought '+qty+' '+asset.symbol,-cost,isStock?'Investing':'Crypto');toast('Simulated purchase complete','success')})},
+ cardControls(){Router.go('cards');toast('Card controls are below your card')},
+ notifications(){const u=Store.user(),items=u.notifications||[];Modal.open('Notifications',items.length?'Your latest account activity.':'You are all caught up.',items.length?'<div class="notification-list">'+items.slice(0,12).map(n=>'<div class="notification-item"><b>'+esc(n.title)+'</b><span>'+esc(n.detail)+'</span></div>').join('')+'</div>':'<div class="empty-state">No notifications yet. Transactions will appear here.</div>','Done',()=>Modal.close())},
+ search(){Modal.open('Search LarpBank','Jump to a page or find a transaction.','<input class="modal-input" name="q" id="global-search-input" placeholder="Try “analytics” or “coffee shop”"><div id="global-search-results" class="search-results"></div>','Close',()=>Modal.close());const input=$('#global-search-input');input.addEventListener('input',()=>{const q=input.value.toLowerCase(),u=Store.user(),pages=[['Overview','banking'],['Transactions','transactions'],['Analytics','analytics'],['My cards','cards'],['Investments','investing'],['Crypto','crypto'],['Settings','settings']];const matches=pages.filter(p=>p[0].toLowerCase().includes(q));const tx=u.transactions.filter(t=>t.description.toLowerCase().includes(q)).slice(0,5);$('#global-search-results').innerHTML=matches.map(p=>'<button type="button" data-search-view="'+p[1]+'">'+p[0]+' <i class="fa-solid fa-arrow-right"></i></button>').join('')+tx.map(t=>'<button type="button" data-search-tx="1">'+esc(t.description)+' · '+currency(t.amount)+'</button>').join('')}, {once:false});input.dispatchEvent(new Event('input'))},
+ exportCSV(){const u=Store.user(),rows=[['Date','Description','Category','Amount'],...u.transactions.map(t=>[new Date(t.date).toISOString(),t.description,t.category,t.amount])];const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');this.download(csv,'larpbank-transactions.csv','text/csv');toast('Transaction CSV exported','success')},
+ exportData(){this.download(JSON.stringify(Store.user(),null,2),'larpbank-account-data.json','application/json');toast('Account data downloaded','success')},
+ download(content,name,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)},
+ resetDemo(){if(!confirm('Reset your demo balances, investments and transaction history?'))return;const u=Store.user(),fresh=defaults(u.username,u.password);fresh.displayName=u.displayName;Store.update(fresh);Renderer.all(fresh);toast('Demo account reset','success')},
+ clearData(){if(!confirm('Permanently delete all LarpBank accounts and local data from this browser?'))return;localStorage.removeItem(Store.USERS_KEY);Store.logout();location.reload()},
 };
-document.getElementById('tab-signup').onclick = () => {
-  isSignupMode = true;
-  document.getElementById('tab-signup').className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all';
-  document.getElementById('tab-login').className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all';
-  document.getElementById('auth-submit').textContent = 'Create Account';
-};
-
-document.getElementById('auth-form').onsubmit = (e) => {
-  e.preventDefault();
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  const users = Store.getUsers();
-  if (isSignupMode) {
-    if (users.find(x => x.username === u)) return UI.showToast('Username taken', 'error');
-    const newUser = DataGenerator.createUser(u, p);
-    users.push(newUser); Store.saveUsers(users); Store.setSession(u);
-    initializeApp(newUser);
-  } else {
-    const user = users.find(x => x.username === u && x.password === p);
-    if (!user) return UI.showToast('Invalid credentials', 'error');
-    Store.setSession(u); initializeApp(user);
-  }
-};
-
-document.getElementById('save-api-key').onclick = () => {
-  localStorage.setItem('larpbank_deepseek_v5', document.getElementById('api-key-input').value.trim());
-  UI.showToast('API Key Saved', 'success');
-};
-document.getElementById('clear-data-btn').onclick = () => { if (confirm('Delete all data?')) { localStorage.clear(); location.reload(); } };
-document.getElementById('logout-btn').onclick = () => { Store.clearSession(); location.reload(); };
-
-document.getElementById('chat-form').onsubmit = async (e) => {
-  e.preventDefault();
-  const msg = document.getElementById('chat-input').value.trim();
-  if (!msg) return;
-  document.getElementById('chat-input').value = '';
-  const chatMsgs = document.getElementById('chat-messages');
-  chatMsgs.innerHTML += `<div class="flex justify-end"><div class="bubble-user px-4 py-3 text-sm shadow-sm max-w-[85%]">${msg}</div></div>`;
-  chatMsgs.scrollTop = chatMsgs.scrollHeight;
-  const response = await AI.sendMessage(Store.getSessionUser(), msg);
-  chatMsgs.innerHTML += `<div class="flex justify-start"><div class="bubble-ai px-4 py-3 text-sm text-gray-700 shadow-sm max-w-[85%]">${response}</div></div>`;
-  chatMsgs.scrollTop = chatMsgs.scrollHeight;
-};
-
-function initializeApp(user) {
-  document.getElementById('view-auth').classList.remove('active');
-  document.getElementById('app-container').classList.remove('hidden');
-  document.getElementById('settings-username').textContent = user.username;
-  document.getElementById('settings-avatar').textContent = user.username[0].toUpperCase();
-  document.getElementById('api-key-input').value = localStorage.getItem('larpbank_deepseek_v5') || '';
-  
-  // Seed some initial transactions if none exist
-  if (user.transactions.length === 0) {
-      user.transactions = [
-          { id: '1', date: new Date().toISOString(), description: 'Initial Deposit', category: 'Income', amount: 15000 },
-          { id: '2', date: new Date(Date.now() - 86400000).toISOString(), description: 'Apple Store', category: 'Shopping', amount: -1299 }
-      ];
-      Store.updateUser(user);
-  }
-
-  Renderer.renderAll(user);
-  Router.navigate('banking');
-}
-
-(function boot() {
-  const activeUser = Store.getSessionUser();
-  if (activeUser) initializeApp(activeUser);
-  else { document.getElementById('view-auth').classList.add('active'); document.getElementById('app-container').classList.add('hidden'); }
-})();
+function updatePref(key,value){const u=Store.user();u.preferences[key]=value;save(u)}
+function setTheme(theme){updatePref('theme',theme);$$('[data-theme]').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme))}
+function handleAction(el){const u=Store.user(),a=el.dataset.action;if(!a)return;switch(a){
+ case'go':Router.go(el.dataset.view);break;case'transfer':App.transfer();break;case'deposit':App.deposit();break;case'pay-bill':App.bill();break;case'add-account':App.addAccount();break;case'manage-accounts':Router.go('settings');toast('Manage accounts from your settings');break;case'toggle-balance':u.preferences.hideBalances=!u.preferences.hideBalances;save(u);break;case'card-controls':App.cardControls();break;case'notifications':App.notifications();break;case'profile':Router.go('settings');break;case'logout':if(confirm('Log out of LarpBank?')){Store.logout();location.reload()}break;case'edit-profile':App.profile();break;case'set-balance':App.setBalance();break;case'add-funds':u.accounts.checking.balance+=10000;addTransaction(u,'Sandbox funds added',10000,'Income');toast('$10,000 added to demo checking','success');break;case'reset-demo':App.resetDemo();break;case'clear-data':App.clearData();break;case'export':App.exportCSV();break;case'export-data':App.exportData();break;case'about':Modal.open('About LarpBank','A fictional banking playground.','<div class="modal-result">All balances, cards, transfers, investments and crypto shown here are simulated and stored in this browser. This is not a bank or financial product. No real payments or deposits are processed.</div>','Got it',()=>Modal.close());break;case'close-modal':Modal.close();break;case'search':App.search();break;case'buy-stock':App.buy('stock',el.dataset.symbol);break;case'buy-crypto':App.buy('crypto',el.dataset.symbol);break;case'toggle-card':updatePref('cardLocked',!u.preferences.cardLocked);toast(u.preferences.cardLocked?'Card paused':'Card resumed');break;case'toggle-online':updatePref('online',!u.preferences.online);toast('Online payment preference updated');break;case'toggle-tap':updatePref('tap',!u.preferences.tap);toast('Contactless preference updated');break;case'compact':updatePref('compact',!u.preferences.compact);break;case'privacy':updatePref('hideBalances',!u.preferences.hideBalances);break;case'notifications-toggle':updatePref('notifications',!u.preferences.notifications);break;case'theme':setTheme(el.dataset.theme);break;case'accent':updatePref('accent',el.dataset.color);break;case'card-style':updatePref('cardStyle',el.dataset.style);break;case'copy-card':navigator.clipboard?.writeText('•••• •••• •••• '+u.accounts.checking.number).then(()=>toast('Masked card number copied')).catch(()=>toast('Clipboard unavailable','error'));break;
+}}
+document.addEventListener('click',e=>{const nav=e.target.closest('[data-target]');if(nav){Router.go(nav.dataset.target);return}const action=e.target.closest('[data-action]');if(action){handleAction(action);return}const searchView=e.target.closest('[data-search-view]');if(searchView){Modal.close();Router.go(searchView.dataset.searchView)}});
+$('#global-modal').addEventListener('click',e=>{if(e.target.id==='global-modal')Modal.close()});
+$('#transaction-search').addEventListener('input',()=>Renderer.transactions(Store.user()));$('#transaction-filter').addEventListener('change',()=>Renderer.transactions(Store.user()));$('#analytics-period').addEventListener('change',()=>Renderer.analytics(Store.user()));$('#currency-select').addEventListener('change',e=>updatePref('currency',e.target.value));
+let signup=false;function authMode(next){signup=next;$('#tab-login').classList.toggle('active',!signup);$('#tab-signup').classList.toggle('active',signup);$('#auth-submit').innerHTML=signup?'Create account <i class="fa-solid fa-arrow-right"></i>':'Sign in <i class="fa-solid fa-arrow-right"></i>';$('#auth-title').textContent=signup?'Create your account':'Sign in to your bank';$('#auth-subtitle').textContent=signup?'Set up your own fictional banking space.':'Pick up right where you left off.';$('#password').autocomplete=signup?'new-password':'current-password'}
+$('#tab-login').onclick=()=>authMode(false);$('#tab-signup').onclick=()=>authMode(true);
+$('#auth-form').onsubmit=e=>{e.preventDefault();const name=$('#username').value.trim(),password=$('#password').value,users=Store.users();if(name.length<2||password.length<4)return toast('Use a username and password with at least 4 characters','error');if(signup){if(users.some(u=>u.username.toLowerCase()===name.toLowerCase()))return toast('That username is already taken','error');const user=defaults(name,password);users.push(user);Store.save(users);Store.setSession(name);boot()}else{const user=users.find(u=>u.username===name&&u.password===password);if(!user)return toast('Username or password is incorrect','error');Store.setSession(name);boot()}};
+function boot(){const user=Store.user();if(!user){$('#view-auth').classList.add('active');$('#app-container').classList.add('hidden');return}user.preferences=user.preferences||{theme:'light',accent:'#171717',currency:'USD',compact:false,hideBalances:false,notifications:true,cardStyle:'midnight',cardLocked:false,online:true,tap:true};user.notifications=user.notifications||[];user.displayName=user.displayName||user.username;Store.update(user);$('#view-auth').classList.remove('active');$('#app-container').classList.remove('hidden');Renderer.all(user);Router.go('banking');}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(!$('#app-container').classList.contains('hidden'))App.search()}if(e.key==='Escape')Modal.close()});
+boot();
