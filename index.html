@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f7f7f5">
-  <meta name="description" content="Bank — a fictional banking experience.">
-  <title>Bank — Personal banking</title>
+  <meta name="theme-color" content="#f4f3ef">
+  <meta name="description" content="Bank Private Client — a fictional personal finance and portfolio simulator.">
+  <title>Bank — Private Client</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,11 +16,11 @@
   <div id="toast-container" aria-live="polite"></div>
   <section id="view-auth" class="auth-view view active">
     <div class="auth-aside">
-      <a class="brand brand-light" href="#"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>Bank</span></a>
+      <a class="brand brand-light" href="#"><span class="brand-mark">B</span><span>Bank</span></a>
       <div class="auth-pitch"><p class="eyebrow">YOUR MONEY, YOUR RULES</p><h1>A clearer view<br>of your money.</h1><p>A clearer view of your money. Keep your accounts, activity and plans in one place.</p><div class="auth-footnote"><i class="fa-solid fa-shield-halved"></i> Fictional money · No real financial services</div></div>
     </div>
     <div class="auth-panel"><div class="auth-card">
-      <a class="brand brand-dark" href="#"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>Bank</span></a>
+      <a class="brand brand-dark" href="#"><span class="brand-mark">B</span><span>Bank</span></a>
       <p class="eyebrow">WELCOME BACK</p><h2 id="auth-title">Sign in to Bank</h2><p class="muted" id="auth-subtitle">Your accounts, all in one place.</p>
       <div class="auth-tabs"><button class="auth-tab active" id="tab-login" type="button">Sign in</button><button class="auth-tab" id="tab-signup" type="button">Create account</button></div>
       <form id="auth-form"><label for="username">Username</label><input id="username" autocomplete="username" placeholder="Your username" required minlength="2"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Your password" required minlength="4"><button class="btn btn-primary btn-wide" id="auth-submit" type="submit">Sign in <i class="fa-solid fa-arrow-right"></i></button></form>
@@ -30,7 +30,7 @@
 
   <div id="app-container" class="app-shell hidden">
     <aside class="sidebar">
-      <a class="brand brand-dark" href="#" data-action="go" data-view="banking"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>Bank</span></a>
+      <a class="brand brand-dark" href="#" data-action="go" data-view="banking"><span class="brand-mark">B</span><span>Bank</span></a>
       <div class="workspace-label">WORKSPACE</div>
       <nav class="side-nav" aria-label="Main navigation">
         <button class="nav-item active" data-target="banking"><i class="fa-solid fa-grid-2"></i><span>Overview</span></button>
@@ -48,7 +48,7 @@
     </aside>
 
     <main class="main-content">
-      <header class="topbar"><div class="mobile-brand"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><b>Bank</b></div><div class="breadcrumbs"><span>Personal</span><i class="fa-solid fa-chevron-right"></i><strong id="page-label">Overview</strong></div><div class="topbar-actions"><span class="demo-mode-label"><i></i> SIMULATED</span><button class="search-trigger" data-action="search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span><kbd>⌘ K</kbd></button><button class="icon-btn notification-btn" data-action="notifications" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><button class="avatar avatar-button" id="top-avatar" data-action="profile">U</button></div></header>
+      <header class="topbar"><div class="mobile-brand"><span class="brand-mark">B</span><b>Bank</b></div><div class="breadcrumbs"><span>Personal</span><i class="fa-solid fa-chevron-right"></i><strong id="page-label">Overview</strong></div><div class="topbar-actions"><span class="demo-mode-label"><i></i> SIMULATED</span><button class="search-trigger" data-action="search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span><kbd>⌘ K</kbd></button><button class="icon-btn notification-btn" data-action="notifications" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><button class="avatar avatar-button" id="top-avatar" data-action="profile">U</button></div></header>
 
       <section id="view-banking" class="view page-view active">
         <div class="page-heading"><div><p class="eyebrow" id="today-label">PERSONAL FINANCE</p><h1 id="greeting-text">Good morning</h1><p class="muted">Here's what's happening with your money.</p></div><button class="btn btn-primary" data-action="transfer"><i class="fa-solid fa-paper-plane"></i> Send money</button></div>
