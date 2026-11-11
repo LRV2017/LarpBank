@@ -1,344 +1,115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#f3f4f6">
-  <title>LarpBank | Next-Gen Finance</title>
-  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5">
+  <meta name="description" content="LarpBank — a fictional banking experience.">
+  <title>LarpBank — Banking, reimagined</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- TOAST CONTAINER -->
-  <div id="toast-container"></div>
-
-  <!-- AUTH VIEW -->
-  <div id="view-auth" class="view active flex flex-col justify-center p-6" style="background: var(--bg-light); height: 100vh; padding-bottom: 0;">
-    <div class="w-full max-w-sm mx-auto">
-      <div class="text-center mb-10">
-        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-          <i class="fas fa-bolt text-white text-2xl"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">LarpBank</h1>
-        <p class="text-gray-500 mt-2 text-sm font-medium">The internet's finest fictional bank.</p>
-      </div>
-      
-      <div class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
-        <div class="flex bg-gray-100 rounded-xl p-1 mb-6">
-          <button id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-semibold bg-white shadow-sm text-black transition-all">Sign In</button>
-          <button id="tab-signup" class="flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-500 transition-all">Sign Up</button>
-        </div>
-        
-        <form id="auth-form" class="space-y-4">
-          <div>
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block">Username</label>
-            <input type="text" id="username" placeholder="Enter username" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" required>
-          </div>
-          <div>
-            <label class="text-xs font-semibold text-gray-500 ml-1 mb-1 block">Password</label>
-            <input type="password" id="password" placeholder="Enter password" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" required>
-          </div>
-          <button type="submit" id="auth-submit" class="w-full bg-black text-white rounded-xl py-3.5 font-bold text-sm mt-4 active:scale-95 transition-all">Sign In</button>
-        </form>
-      </div>
+  <div id="toast-container" aria-live="polite"></div>
+  <section id="view-auth" class="auth-view view active">
+    <div class="auth-aside">
+      <a class="brand brand-light" href="#"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>LarpBank</span></a>
+      <div class="auth-pitch"><p class="eyebrow">YOUR MONEY, YOUR RULES</p><h1>A better way<br>to play banker.</h1><p>A polished fictional banking experience. Build your balance, move money, and make the numbers yours.</p><div class="auth-footnote"><i class="fa-solid fa-shield-halved"></i> Fictional money · No real financial services</div></div>
     </div>
+    <div class="auth-panel"><div class="auth-card">
+      <a class="brand brand-dark" href="#"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>LarpBank</span></a>
+      <p class="eyebrow">WELCOME BACK</p><h2 id="auth-title">Sign in to your bank</h2><p class="muted" id="auth-subtitle">Pick up right where you left off.</p>
+      <div class="auth-tabs"><button class="auth-tab active" id="tab-login" type="button">Sign in</button><button class="auth-tab" id="tab-signup" type="button">Create account</button></div>
+      <form id="auth-form"><label for="username">Username</label><input id="username" autocomplete="username" placeholder="Your username" required minlength="2"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Your password" required minlength="4"><button class="btn btn-primary btn-wide" id="auth-submit" type="submit">Sign in <i class="fa-solid fa-arrow-right"></i></button></form>
+      <p class="auth-note">Demo account data is stored in this browser only. Do not reuse real passwords.</p>
+    </div></div>
+  </section>
+
+  <div id="app-container" class="app-shell hidden">
+    <aside class="sidebar">
+      <a class="brand brand-dark" href="#" data-action="go" data-view="banking"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><span>LarpBank</span></a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-target="banking"><i class="fa-solid fa-grid-2"></i><span>Overview</span></button>
+        <button class="nav-item" data-target="transactions"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Transactions</span></button>
+        <button class="nav-item" data-target="analytics"><i class="fa-solid fa-chart-simple"></i><span>Analytics</span></button>
+        <button class="nav-item" data-target="cards"><i class="fa-regular fa-credit-card"></i><span>My cards</span></button>
+        <button class="nav-item" data-target="investing"><i class="fa-solid fa-chart-line"></i><span>Investments</span></button>
+        <button class="nav-item" data-target="crypto"><i class="fa-brands fa-bitcoin"></i><span>Crypto</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="workspace-label">PREFERENCES</div>
+        <button class="nav-item" data-target="settings"><i class="fa-solid fa-sliders"></i><span>Settings</span></button>
+        <div class="sidebar-profile"><div class="avatar" id="sidebar-avatar">U</div><div class="profile-meta"><strong id="sidebar-username">User</strong><span>Personal account</span></div><button class="icon-btn" data-action="logout" aria-label="Log out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar"><div class="mobile-brand"><span class="brand-mark"><i class="fa-solid fa-a"></i></span><b>LarpBank</b></div><div class="breadcrumbs"><span>Personal</span><i class="fa-solid fa-chevron-right"></i><strong id="page-label">Overview</strong></div><div class="topbar-actions"><button class="search-trigger" data-action="search"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span><kbd>⌘ K</kbd></button><button class="icon-btn notification-btn" data-action="notifications" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><button class="avatar avatar-button" id="top-avatar" data-action="profile">U</button></div></header>
+
+      <section id="view-banking" class="view page-view active">
+        <div class="page-heading"><div><p class="eyebrow" id="today-label">PERSONAL FINANCE</p><h1 id="greeting-text">Good morning</h1><p class="muted">Here's what's happening with your money.</p></div><button class="btn btn-primary" data-action="transfer"><i class="fa-solid fa-paper-plane"></i> Send money</button></div>
+        <div class="overview-grid">
+          <div class="primary-column">
+            <article class="balance-card" id="balance-card"><div class="balance-top"><span> TOTAL BALANCE <span class="live-dot"></span></span><button class="card-more" data-action="toggle-balance" aria-label="Toggle balance visibility"><i class="fa-regular fa-eye"></i></button></div><div class="balance-amount" id="banking-balance">$0.00</div><div class="balance-footer"><span>Across all accounts</span><span class="balance-change"><i class="fa-solid fa-arrow-trend-up"></i> Your fictional finances</span></div><div class="balance-orbit orbit-one"></div><div class="balance-orbit orbit-two"></div></article>
+            <div class="quick-actions"><button data-action="transfer"><span class="quick-icon dark"><i class="fa-solid fa-arrow-up"></i></span><b>Transfer</b></button><button data-action="deposit"><span class="quick-icon"><i class="fa-solid fa-arrow-down"></i></span><b>Deposit</b></button><button data-action="pay-bill"><span class="quick-icon"><i class="fa-regular fa-file-lines"></i></span><b>Pay a bill</b></button><button data-action="add-account"><span class="quick-icon"><i class="fa-solid fa-plus"></i></span><b>Add account</b></button></div>
+            <article class="panel"><div class="panel-heading"><div><h2>Your accounts</h2><p class="muted">A quick look at your balances</p></div><button class="text-button" data-action="manage-accounts">Manage accounts <i class="fa-solid fa-arrow-up-right-from-square"></i></button></div><div id="banking-accounts" class="account-list"></div></article>
+            <article class="panel"><div class="panel-heading"><div><h2>Recent activity</h2><p class="muted">Your latest money movements</p></div><button class="text-button" data-action="go" data-view="transactions">View all <i class="fa-solid fa-arrow-right"></i></button></div><div id="banking-transactions" class="transaction-list"></div></article>
+          </div>
+          <div class="secondary-column">
+            <article class="panel spending-panel"><div class="panel-heading"><div><h2>Cash flow</h2><p class="muted">This month</p></div><button class="icon-btn" data-action="go" data-view="analytics"><i class="fa-solid fa-arrow-up-right-from-square"></i></button></div><div class="cashflow-total" id="cashflow-net">$0.00</div><div class="cashflow-legend"><span><i class="legend-dot income"></i>Income <b id="cashflow-income">$0</b></span><span><i class="legend-dot expense"></i>Expenses <b id="cashflow-expense">$0</b></span></div><div class="mini-chart" id="cashflow-chart"></div></article>
+            <article class="panel card-panel"><div class="panel-heading"><div><h2>Your card</h2><p class="muted">Everyday debit</p></div><button class="text-button" data-action="go" data-view="cards">Details</button></div><div class="mini-bank-card" id="mini-bank-card"><div class="mini-card-top"><span>LarpBank</span><i class="fa-solid fa-wifi"></i></div><div class="chip"></div><div class="mini-card-number" id="banking-card-num">•••• 7527</div><div class="mini-card-bottom"><span id="card-holder">CARD HOLDER</span><i class="fa-brands fa-cc-visa"></i></div></div><div class="card-status-row"><span><i class="legend-dot income"></i> Card status</span><b id="card-status">Active</b></div><button class="btn btn-secondary btn-wide" data-action="card-controls">Manage card</button></article>
+            <article class="panel tip-panel"><div class="tip-icon"><i class="fa-regular fa-lightbulb"></i></div><div><b>A little more control.</b><p class="muted">Make LarpBank feel like yours with themes, card styles and dashboard preferences.</p><button class="text-button" data-action="go" data-view="settings">Explore settings <i class="fa-solid fa-arrow-right"></i></button></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-transactions" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">ACCOUNT ACTIVITY</p><h1>Transactions</h1><p class="muted">Every deposit, purchase and transfer in one place.</p></div><button class="btn btn-primary" data-action="transfer"><i class="fa-solid fa-paper-plane"></i> Send money</button></div>
+        <article class="panel"><div class="transaction-toolbar"><div class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="transaction-search" placeholder="Search transactions..."></div><select id="transaction-filter" aria-label="Filter transactions"><option value="all">All activity</option><option value="income">Money in</option><option value="expense">Money out</option></select><button class="btn btn-secondary" data-action="export"><i class="fa-solid fa-download"></i> Export CSV</button></div><div id="all-transactions" class="transaction-list"></div></article>
+      </section>
+
+      <section id="view-analytics" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">YOUR MONEY, IN PERSPECTIVE</p><h1>Analytics</h1><p class="muted">Understand your fictional spending patterns.</p></div><select id="analytics-period" aria-label="Analytics period"><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option></select></div>
+        <div class="stat-grid"><article class="stat-card"><span>Total income</span><b id="analytics-total-income">$0.00</b><small class="positive">Money in</small></article><article class="stat-card"><span>Total spending</span><b id="analytics-total-spend">$0.00</b><small>Money out</small></article><article class="stat-card"><span>Net cash flow</span><b id="analytics-net">$0.00</b><small>Income minus spending</small></article><article class="stat-card"><span>Transactions</span><b id="analytics-count">0</b><small>Recorded activity</small></article></div>
+        <article class="panel"><div class="panel-heading"><div><h2>Cash flow trend</h2><p class="muted">Based on your saved transactions</p></div></div><div class="large-chart" id="analytics-chart"></div></article>
+        <article class="panel"><div class="panel-heading"><div><h2>Spending breakdown</h2><p class="muted">Where your money went</p></div></div><div id="category-breakdown" class="category-list"></div></article>
+      </section>
+
+      <section id="view-cards" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">PAYMENTS</p><h1>My cards</h1><p class="muted">Manage your fictional payment cards.</p></div><button class="btn btn-primary" data-action="card-controls"><i class="fa-solid fa-gear"></i> Card controls</button></div>
+        <div class="cards-layout"><div><div class="large-bank-card" id="large-bank-card"><div class="large-card-top"><b>LarpBank</b><i class="fa-brands fa-cc-visa"></i></div><div class="chip"></div><div class="large-card-number" id="large-card-number">•••• •••• •••• 7527</div><div class="large-card-bottom"><span><small>ACCOUNT HOLDER</small><b id="large-card-holder">YOUR NAME</b></span><span><small>VALID THRU</small><b>12/30</b></span></div></div><div class="card-style-picker"><span>Card appearance</span><div><button data-action="card-style" data-style="midnight" class="style-swatch midnight active" aria-label="Midnight card"></button><button data-action="card-style" data-style="slate" class="style-swatch slate" aria-label="Slate card"></button><button data-action="card-style" data-style="plum" class="style-swatch plum" aria-label="Plum card"></button><button data-action="card-style" data-style="forest" class="style-swatch forest" aria-label="Forest card"></button></div></div></div><article class="panel card-controls-panel"><p class="eyebrow">CARD SETTINGS</p><h2>Everyday debit</h2><p class="muted">•••• <span id="card-last-four">7527</span></p><div class="setting-row"><div><b>Card status</b><small>Pause or resume card spending</small></div><button class="toggle" id="card-lock-toggle" data-action="toggle-card" aria-pressed="false"><span></span></button></div><div class="setting-row"><div><b>Online payments</b><small>Allow online purchases</small></div><button class="toggle on" id="online-toggle" data-action="toggle-online" aria-pressed="true"><span></span></button></div><div class="setting-row"><div><b>Contactless payments</b><small>Tap to pay</small></div><button class="toggle on" id="tap-toggle" data-action="toggle-tap" aria-pressed="true"><span></span></button></div><button class="btn btn-secondary btn-wide" data-action="copy-card"><i class="fa-regular fa-copy"></i> Copy card number</button></article></div>
+      </section>
+
+      <section id="view-investing" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">PORTFOLIO</p><h1>Investments</h1><p class="muted">Explore a simulated stock portfolio. Prices are illustrative.</p></div></div>
+        <div class="stat-grid"><article class="stat-card"><span>Portfolio value</span><b id="investing-total">$0.00</b><small>Simulated holdings</small></article><article class="stat-card"><span>Buying power</span><b id="investing-buying-power">$0.00</b><small>From checking</small></article></div>
+        <article class="panel"><div class="panel-heading"><div><h2>Your stocks</h2><p class="muted">Buy shares using your checking balance</p></div></div><div id="stocks-list" class="asset-list"></div></article>
+      </section>
+
+      <section id="view-crypto" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">DIGITAL ASSETS</p><h1>Crypto</h1><p class="muted">A simulated portfolio — no real crypto is held or traded.</p></div></div>
+        <div class="stat-grid"><article class="stat-card"><span>Portfolio value</span><b id="crypto-total">$0.00</b><small>Illustrative market values</small></article><article class="stat-card"><span>Cash balance</span><b id="crypto-cash">$0.00</b><small>Checking account</small></article></div>
+        <article class="panel"><div class="panel-heading"><div><h2>Your tokens</h2><p class="muted">Buy simulated token amounts</p></div></div><div id="crypto-list" class="asset-list"></div></article>
+      </section>
+
+      <section id="view-settings" class="view page-view">
+        <div class="page-heading"><div><p class="eyebrow">MAKE IT YOURS</p><h1>Settings</h1><p class="muted">Personalize the way LarpBank looks and works.</p></div></div>
+        <div class="settings-grid">
+          <article class="panel"><div class="settings-section-head"><div class="settings-avatar" id="settings-avatar">U</div><div><h2 id="settings-username">User</h2><p class="muted">Personal account</p></div><button class="btn btn-secondary" data-action="edit-profile">Edit profile</button></div><div class="setting-row"><div><b>Display name</b><small>Shown around your bank</small></div><span id="settings-display-name">User</span></div><div class="setting-row"><div><b>Currency</b><small>Display balances in this currency</small></div><select id="currency-select"><option value="USD">USD · $</option><option value="EUR">EUR · €</option><option value="GBP">GBP · £</option><option value="CAD">CAD · $</option></select></div></article>
+          <article class="panel"><p class="eyebrow">APPEARANCE</p><h2>Theme & accent</h2><p class="muted">Choose the look that feels right.</p><div class="theme-options"><button data-action="theme" data-theme="light" class="theme-choice active"><span class="theme-preview light-preview"></span><b>Light</b></button><button data-action="theme" data-theme="dark" class="theme-choice"><span class="theme-preview dark-preview"></span><b>Dark</b></button><button data-action="theme" data-theme="system" class="theme-choice"><span class="theme-preview system-preview"></span><b>System</b></button></div><div class="setting-row"><div><b>Accent color</b><small>Buttons and highlights</small></div><div class="accent-options"><button data-action="accent" data-color="#171717" class="accent-dot black active" aria-label="Black"></button><button data-action="accent" data-color="#3157d5" class="accent-dot blue" aria-label="Blue"></button><button data-action="accent" data-color="#0f766e" class="accent-dot teal" aria-label="Teal"></button><button data-action="accent" data-color="#7c3aed" class="accent-dot violet" aria-label="Violet"></button><button data-action="accent" data-color="#be593e" class="accent-dot clay" aria-label="Clay"></button></div></div><div class="setting-row"><div><b>Compact layout</b><small>Reduce spacing across pages</small></div><button class="toggle" id="compact-toggle" data-action="compact" aria-pressed="false"><span></span></button></div></article>
+          <article class="panel"><p class="eyebrow">ACCOUNT PREFERENCES</p><h2>Privacy & display</h2><div class="setting-row"><div><b>Hide balances by default</b><small>Keep amounts out of view</small></div><button class="toggle" id="privacy-toggle" data-action="privacy" aria-pressed="false"><span></span></button></div><div class="setting-row"><div><b>Desktop notifications</b><small>Show in-app activity alerts</small></div><button class="toggle on" id="notify-toggle" data-action="notifications-toggle" aria-pressed="true"><span></span></button></div><div class="setting-row"><div><b>Download my data</b><small>Export your local account data</small></div><button class="text-button" data-action="export-data">Download <i class="fa-solid fa-download"></i></button></div></article>
+          <article class="panel dev-panel"><p class="eyebrow">SANDBOX TOOLS</p><h2>Play with your balance</h2><p class="muted">These tools only change fictional demo funds in this browser.</p><div class="dev-actions"><button class="btn btn-secondary" data-action="set-balance">Set checking balance</button><button class="btn btn-secondary" data-action="add-funds">Add $10,000</button><button class="btn btn-secondary" data-action="reset-demo">Reset demo account</button></div></article>
+          <article class="panel"><p class="eyebrow">SUPPORT</p><h2>About LarpBank</h2><p class="muted">LarpBank is a fictional banking simulator. It is not a bank, does not hold deposits, and cannot move real money.</p><button class="text-button" data-action="about">Read about this demo <i class="fa-solid fa-arrow-right"></i></button></article>
+          <article class="panel danger-panel"><p class="eyebrow">ACCOUNT</p><h2>Sign out or reset</h2><p class="muted">Your data is saved locally in this browser.</p><button class="btn btn-secondary" data-action="logout">Log out</button><button class="text-button danger-text" data-action="clear-data">Delete local account data</button></article>
+        </div>
+      </section>
+    </main>
+    <nav class="mobile-nav" aria-label="Mobile navigation"><button class="nav-item active" data-target="banking"><i class="fa-solid fa-grid-2"></i><span>Home</span></button><button class="nav-item" data-target="transactions"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Activity</span></button><button class="nav-item" data-target="analytics"><i class="fa-solid fa-chart-simple"></i><span>Insights</span></button><button class="nav-item" data-target="cards"><i class="fa-regular fa-credit-card"></i><span>Cards</span></button><button class="nav-item" data-target="settings"><i class="fa-solid fa-user"></i><span>Profile</span></button></nav>
   </div>
-
-  <!-- MAIN APP -->
-  <div id="app-container" class="hidden">
-
-    <!-- VIEW 1: BANKING -->
-    <div id="view-banking" class="view p-5 theme-light">
-      <header class="flex justify-between items-center mb-6 pt-2">
-        <div class="flex items-center gap-3">
-          <i class="fas fa-bars text-xl text-gray-700 cursor-pointer active:scale-95 transition" onclick="UI.showToast('Menu opened')"></i>
-        </div>
-        <div class="flex items-center gap-4">
-          <i class="far fa-bell text-xl text-gray-700 cursor-pointer active:scale-95 transition" onclick="UI.showToast('No new notifications')"></i>
-        </div>
-      </header>
-
-      <h2 class="text-2xl font-bold mb-4 text-gray-900" id="greeting-text">Good evening, User</h2>
-
-      <div class="debit-card mb-6" onclick="UI.showToast('Card details copied')">
-        <div class="flex justify-between items-center mb-2">
-            <p class="text-sm text-blue-200 font-medium">Debit Card</p>
-            <i class="fab fa-cc-visa text-2xl text-white opacity-80"></i>
-        </div>
-        <h3 class="text-[32px] font-extrabold mb-4 tracking-tight" id="banking-balance">$0.00</h3>
-        <div class="flex justify-between items-end">
-            <p class="text-xs text-blue-200 font-medium">Available balance</p>
-            <p class="text-xs text-blue-200 font-mono tracking-widest" id="banking-card-num">•••• 7527</p>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="grid grid-cols-4 gap-3 mb-8">
-        <button class="flex flex-col items-center gap-2" onclick="App.openModal('transfer')">
-          <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 active:scale-95 transition">
-            <i class="fas fa-paper-plane text-lg"></i>
-          </div>
-          <span class="text-[11px] font-semibold text-gray-700">Send</span>
-        </button>
-        <button class="flex flex-col items-center gap-2" onclick="App.openModal('deposit')">
-          <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 active:scale-95 transition">
-            <i class="fas fa-arrow-down text-lg"></i>
-          </div>
-          <span class="text-[11px] font-semibold text-gray-700">Deposit</span>
-        </button>
-        <button class="flex flex-col items-center gap-2" onclick="UI.showToast('Bill Pay is coming soon')">
-          <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 active:scale-95 transition">
-            <i class="fas fa-file-invoice-dollar text-lg"></i>
-          </div>
-          <span class="text-[11px] font-semibold text-gray-700">Pay Bills</span>
-        </button>
-        <button class="flex flex-col items-center gap-2" onclick="Router.navigate('settings')">
-          <div class="w-14 h-14 bg-gray-200 rounded-2xl flex items-center justify-center text-gray-700 active:scale-95 transition">
-            <i class="fas fa-ellipsis-h text-lg"></i>
-          </div>
-          <span class="text-[11px] font-semibold text-gray-700">More</span>
-        </button>
-      </div>
-
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-gray-900">My Accounts</h3>
-        <div class="w-6 h-6 bg-blue-900 rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition" onclick="UI.showToast('Showing all accounts')">
-          <i class="fas fa-arrow-up text-white text-[10px] transform rotate-45"></i>
-        </div>
-      </div>
-      <div class="space-y-3 mb-8" id="banking-accounts"></div>
-
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-gray-900">Recent Transactions</h3>
-        <button class="text-blue-600 text-sm font-semibold" onclick="Router.navigate('analytics')">See All</button>
-      </div>
-      <div class="space-y-3" id="banking-transactions"></div>
-    </div>
-
-    <!-- VIEW 2: ANALYTICS -->
-    <div id="view-analytics" class="view p-5 theme-light bg-white min-h-screen">
-      <header class="flex justify-between items-center mb-4 pt-2">
-        <i class="fas fa-bars text-xl text-gray-700 cursor-pointer" onclick="UI.showToast('Menu')"></i>
-        <div class="relative">
-          <i class="far fa-bell text-xl text-gray-700 cursor-pointer" onclick="UI.showToast('Analytics updated')"></i>
-        </div>
-      </header>
-
-      <div class="flex items-center gap-2 mb-6">
-        <button class="bg-gray-100 text-gray-800 font-semibold px-4 py-1.5 rounded-full text-sm flex items-center gap-2" onclick="UI.showToast('Date range selected')">
-          Last 30 days <i class="fas fa-chevron-down text-[10px]"></i>
-        </button>
-        <button class="bg-gray-100 text-gray-600 font-semibold px-4 py-1.5 rounded-full text-sm flex items-center gap-2" onclick="UI.showToast('Live view enabled')">
-          <span class="w-2 h-2 rounded-full bg-green-500"></span> Live
-        </button>
-      </div>
-
-      <div class="flex justify-between items-start mb-6">
-        <div>
-          <p class="text-gray-500 text-sm font-medium mb-1">Total spending</p>
-          <p class="text-3xl font-extrabold text-gray-900" id="analytics-total-spend">$0.00</p>
-          <p class="text-sm font-bold text-red-500 mt-1"><i class="fas fa-arrow-down text-xs mr-1"></i>12%</p>
-        </div>
-        <div class="text-right">
-          <p class="text-gray-500 text-sm font-medium mb-1">Income</p>
-          <p class="text-3xl font-extrabold text-gray-900" id="analytics-total-income">$0.00</p>
-          <p class="text-sm font-bold text-green-500 mt-1"><i class="fas fa-arrow-up text-xs mr-1"></i>8%</p>
-        </div>
-      </div>
-
-      <div class="h-48 w-full mb-8 relative chart-container" id="analytics-chart"></div>
-
-      <div class="grid grid-cols-2 gap-3 mb-8">
-        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 cursor-pointer active:scale-95 transition">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xl font-bold text-gray-900">12</span>
-            <i class="fas fa-shopping-bag text-blue-400"></i>
-          </div>
-          <p class="text-xs text-gray-500 font-medium">Shopping</p>
-        </div>
-        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 cursor-pointer active:scale-95 transition">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xl font-bold text-gray-900">8</span>
-            <i class="fas fa-utensils text-orange-400"></i>
-          </div>
-          <p class="text-xs text-gray-500 font-medium">Dining</p>
-        </div>
-        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 cursor-pointer active:scale-95 transition">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xl font-bold text-gray-900">3</span>
-            <i class="fas fa-plane text-purple-400"></i>
-          </div>
-          <p class="text-xs text-gray-500 font-medium">Travel</p>
-        </div>
-        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 cursor-pointer active:scale-95 transition">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-xl font-bold text-gray-900">5</span>
-            <i class="fas fa-bolt text-yellow-400"></i>
-          </div>
-          <p class="text-xs text-gray-500 font-medium">Utilities</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIEW 3: INVESTING -->
-    <div id="view-investing" class="view p-5 theme-light bg-white min-h-screen">
-      <header class="flex justify-between items-center mb-4 pt-2">
-        <i class="fas fa-bars text-xl text-gray-700 cursor-pointer" onclick="UI.showToast('Menu')"></i>
-        <i class="far fa-bell text-xl text-gray-700 cursor-pointer" onclick="UI.showToast('Market News')"></i>
-      </header>
-
-      <h1 class="text-2xl font-bold text-gray-900 mb-1">Investing</h1>
-      <h2 class="text-[38px] font-extrabold text-gray-900 mb-2 tracking-tighter" id="investing-total">$0.00</h2>
-      
-      <div class="flex items-center gap-2 mb-6">
-        <span class="text-sm font-bold text-green-500 flex items-center gap-1">
-          <i class="fas fa-caret-up"></i> +$153,516.37 (6.84%)
-        </span>
-        <span class="text-sm text-gray-400 font-medium">All time</span>
-      </div>
-
-      <div class="h-44 w-full mb-4 relative chart-container" id="investing-chart"></div>
-
-      <div class="flex justify-between items-center py-4 border-b border-gray-100 mb-6">
-        <span class="text-base font-medium text-gray-700">Buying power</span>
-        <div class="flex items-center gap-2">
-          <span class="font-bold text-base text-gray-900" id="investing-buying-power">$0.00</span>
-          <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
-        </div>
-      </div>
-
-      <h3 class="font-bold text-lg text-gray-900 mb-4">Stocks</h3>
-      <div class="space-y-5" id="stocks-list"></div>
-    </div>
-
-    <!-- VIEW 4: CRYPTO -->
-    <div id="view-crypto" class="view p-5 theme-dark min-h-screen">
-      <header class="flex justify-between items-center mb-6 pt-2">
-        <i class="fas fa-bars text-xl text-white cursor-pointer" onclick="UI.showToast('Menu')"></i>
-      </header>
-
-      <div class="flex gap-2 mb-8">
-        <div class="bg-[#a78bfa] text-black font-semibold px-5 py-1.5 rounded-full text-sm shadow-lg shadow-purple-500/20">Home</div>
-        <div class="bg-[#2c2c2e] text-white font-medium px-5 py-1.5 rounded-full text-sm cursor-pointer" onclick="UI.showToast('Trade view')">Trade</div>
-        <div class="bg-[#2c2c2e] text-white font-medium px-5 py-1.5 rounded-full text-sm cursor-pointer" onclick="UI.showToast('Explore view')">Explore</div>
-      </div>
-
-      <h2 class="text-[40px] font-extrabold text-white mb-2 tracking-tighter" id="crypto-total">$0.00</h2>
-      
-      <div class="flex items-center gap-2 mb-8">
-        <span class="text-sm font-bold text-green-500" id="crypto-change">+$0.00</span>
-        <span class="text-xs bg-[#1c1c1e] text-green-500 px-2.5 py-1 rounded-full font-bold border border-green-900">+1.23%</span>
-      </div>
-
-      <div class="flex justify-between items-center bg-[#1c1c1e] p-4 rounded-2xl mb-8 border border-[#2c2c2e] cursor-pointer active:scale-95 transition" onclick="UI.showToast('Cash balance')">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 bg-[#2c2c2e] rounded-full flex items-center justify-center">
-            <i class="fas fa-money-bill-wave text-gray-300 text-sm"></i>
-          </div>
-          <span class="font-bold text-white text-sm">Cash</span>
-        </div>
-        <span class="font-bold text-white text-sm">$0.00</span>
-      </div>
-
-      <h3 class="text-lg font-bold text-white mb-4">Tokens</h3>
-      <div class="space-y-2 mb-8" id="crypto-list"></div>
-    </div>
-
-    <!-- VIEW 5: AI CHAT -->
-    <div id="view-chat" class="view flex flex-col h-screen bg-gray-50 pb-0">
-      <header class="bg-white/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-200 fixed top-0 left-0 right-0 z-20 max-w-md mx-auto">
-        <div class="w-8"></div>
-        <h2 class="text-lg font-bold text-gray-900">LarpAI Assistant</h2>
-        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-          <i class="fas fa-robot text-sm"></i>
-        </div>
-      </header>
-      
-      <div id="chat-messages" class="flex-1 overflow-y-auto p-4 pt-20 pb-32 space-y-4 no-scrollbar">
-        <div class="flex justify-start">
-          <div class="bubble-ai px-4 py-3 text-sm text-gray-700 shadow-sm max-w-[85%]">
-            Hello! I am LarpAI, your personal financial assistant. Ask me about your balances, stocks, or crypto portfolio.
-          </div>
-        </div>
-      </div>
-      
-      <div class="fixed bottom-[100px] left-0 right-0 max-w-md mx-auto px-4 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent pt-4 pb-2 z-10">
-        <form id="chat-form" class="flex items-center gap-2">
-          <input type="text" id="chat-input" placeholder="Ask anything..." class="flex-1 bg-white border border-gray-200 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" autocomplete="off">
-          <button type="submit" class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md active:scale-95 transition flex-shrink-0">
-            <i class="fas fa-arrow-up text-white text-lg"></i>
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- VIEW 6: SETTINGS (Fully Interactive) -->
-    <div id="view-settings" class="view p-5 bg-gray-50 min-h-screen">
-      <header class="flex items-center gap-3 mb-6 pt-2">
-        <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
-      </header>
-      
-      <!-- Profile -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6 flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-inner" id="settings-avatar">U</div>
-            <div>
-            <h2 class="font-bold text-lg text-gray-900" id="settings-username">User</h2>
-            <p class="text-sm text-gray-500 font-medium">Premium Account</p>
-            </div>
-        </div>
-        <button class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 active:scale-95" onclick="App.openModal('editProfile')">
-            <i class="fas fa-pen"></i>
-        </button>
-      </div>
-
-      <!-- Dev Tools (Change Balance) -->
-      <div class="bg-blue-50 rounded-3xl p-5 border border-blue-100 mb-6">
-        <h3 class="font-bold text-blue-900 mb-2 flex items-center gap-2"><i class="fas fa-code"></i> Larp Dev Tools</h3>
-        <p class="text-xs text-blue-700 mb-4">Instantly modify your checking balance to live out your dreams.</p>
-        <button onclick="App.openModal('devSetBalance')" class="w-full bg-blue-600 text-white rounded-xl py-3 font-bold text-sm active:scale-95 transition mb-2">Set Balance</button>
-        <button onclick="App.openModal('devAddFunds')" class="w-full bg-white text-blue-600 border border-blue-200 rounded-xl py-3 font-bold text-sm active:scale-95 transition">Add $10,000</button>
-      </div>
-
-      <!-- API Config -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6">
-        <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><i class="fas fa-key text-gray-500"></i> DeepSeek API</h3>
-        <input type="password" id="api-key-input" placeholder="sk-..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button id="save-api-key" class="w-full bg-black text-white rounded-xl py-3 font-semibold text-sm active:scale-95 transition mb-2">Save Key</button>
-      </div>
-
-      <!-- Danger Zone -->
-      <div class="bg-red-50 rounded-3xl p-5 border border-red-100 mb-6">
-        <h3 class="font-bold text-red-600 mb-2">Danger Zone</h3>
-        <button id="clear-data-btn" class="w-full bg-white text-red-600 border border-red-200 rounded-xl py-3 font-bold text-sm active:scale-95 transition">Clear All Data</button>
-      </div>
-
-      <button id="logout-btn" class="w-full bg-gray-200 text-gray-800 font-bold rounded-2xl py-4 active:scale-95 transition mb-8">Log Out</button>
-    </div>
-
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav" id="bottom-nav">
-      <div class="nav-item active" data-target="banking"><i class="fas fa-home"></i><span>Banking</span></div>
-      <div class="nav-item" data-target="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div>
-      <div class="nav-item" data-target="investing"><i class="fas fa-chart-line"></i><span>Invest</span></div>
-      <div class="nav-item" data-target="crypto"><i class="fab fa-bitcoin"></i><span>Crypto</span></div>
-      <div class="nav-item" data-target="chat"><i class="fas fa-wand-magic-sparkles"></i><span>AI</span></div>
-      <div class="nav-item" data-target="settings"><i class="fas fa-user"></i><span>Profile</span></div>
-    </nav>
-
-  </div>
-
-  <!-- MODAL OVERLAY -->
-  <div class="modal-overlay" id="global-modal">
-    <div class="modal-content" id="modal-content"></div>
-  </div>
-
+  <div class="modal-overlay" id="global-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-content" id="modal-content"></div></div>
   <script src="script.js"></script>
-</body>
-</html>
+</body></html>
