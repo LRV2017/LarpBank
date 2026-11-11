@@ -1,5 +1,2 @@
-/* Card palette extensions */
-
-.mini-bank-card.slate,.large-bank-card.slate{background:linear-gradient(135deg,#39495e,#718096)}
-.mini-bank-card.plum,.large-bank-card.plum{background:linear-gradient(135deg,#40304e,#80648e)}
-.mini-bank-card.forest,.large-bank-card.forest{background:linear-gradient(135deg,#193d31,#477a60)}
+/* Layout corrections */
+.auth-view.view.active{display:grid}
