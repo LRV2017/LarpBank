@@ -60,3 +60,115 @@ body{letter-spacing:-.01em}
 .theme-dark .quick-icon.dark,.theme-dark .brand-mark,.theme-dark .settings-avatar{background:#dce5ef;color:#172b43}
 .theme-dark .btn-primary{background:#dce5ef;color:#172b43}
 .theme-dark .balance-card{background:linear-gradient(115deg,#0c1724,#1b2d40)}
+
+
+/* BANK — private-client redesign */
+:root{--bg:#f3f4f5;--surface:#fff;--surface-2:#f5f6f7;--text:#161a20;--muted:#78818b;--line:#e7e9ec;--accent:#172536;--accent-soft:#edf1f5;--radius:13px;--shadow:0 8px 28px rgba(16,28,42,.035)}
+body{background:#f3f4f5;color:#161a20}
+.sidebar{width:258px;padding:32px 20px 20px;background:#fbfbfc;border-color:#e8eaed}
+.sidebar .brand{padding-bottom:52px}
+.brand{font-size:18px;letter-spacing:-.7px}
+.brand-mark{background:#172536;border-radius:7px}
+.workspace-label{font-size:9px;letter-spacing:.17em}
+.nav-item{padding:12px 13px;border-radius:7px;font-size:12px;color:#7a838d}
+.nav-item.active{background:#edf1f5;color:#182b40}
+.nav-item.active i{color:#182b40}
+.main-content{margin-left:258px;padding:0 54px 72px;max-width:1680px}
+.topbar{height:76px;margin-bottom:38px;border-color:#e6e9ec}
+.page-heading{margin-bottom:28px}
+.page-heading h1{font-size:32px;letter-spacing:-1.5px;font-weight:750}
+.eyebrow{font-size:9px;letter-spacing:.17em}
+.panel,.stat-card{border:1px solid #e7eaee;border-radius:12px;box-shadow:0 2px 9px rgba(18,30,44,.025)}
+.panel{padding:23px 24px}
+.panel h2,.card-controls-panel h2,.settings-grid h2{font-size:15px;letter-spacing:-.2px}
+.balance-card{background:linear-gradient(118deg,#101a27 0%,#1b2a3b 58%,#2a3b4d 100%);border-radius:12px;box-shadow:0 12px 30px rgba(10,20,32,.12);min-height:205px;padding:29px}
+.balance-amount{font-size:42px;letter-spacing:-2px}
+.quick-icon{border-radius:10px;background:#fff}
+.quick-icon.dark{background:#172536;border-color:#172536}
+.btn{border-radius:7px}
+.btn-primary{background:#172536}
+.btn-primary:hover{background:#273c52}
+.icon-btn,.search-trigger{border-radius:7px}
+.account-icon,.transaction-icon{border-radius:9px}
+.stat-card{padding:20px}
+.stat-card b{font-size:23px}
+.cards-layout{grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:28px}
+.large-bank-card,.mini-bank-card{
+ position:relative;isolation:isolate;overflow:hidden;color:#e7e8e9;
+ background:
+  radial-gradient(ellipse at 85% 12%,rgba(255,255,255,.11),transparent 34%),
+  radial-gradient(ellipse at 5% 100%,rgba(255,255,255,.055),transparent 48%),
+  repeating-linear-gradient(115deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 4px),
+  linear-gradient(135deg,#080a0d 0%,#202329 48%,#090b0e 100%);
+ border:1px solid #555a60;
+ box-shadow:0 24px 48px rgba(7,10,14,.24),inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(0,0,0,.8);
+}
+.large-bank-card{max-width:560px;aspect-ratio:1.586;padding:29px 32px;border-radius:14px}
+.large-bank-card:before,.mini-bank-card:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.34;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.12) 48%,transparent 66%);pointer-events:none}
+.large-bank-card:after{content:"";position:absolute;inset:8px;border:1px solid rgba(255,255,255,.09);border-radius:9px;pointer-events:none;opacity:1;transform:none}
+.large-card-top{position:relative;z-index:1;align-items:flex-start}
+.metal-wordmark{font:800 22px Manrope,sans-serif;letter-spacing:.18em;color:#e6e6e3;text-shadow:0 1px 1px #000}
+.metal-wordmark span{font-size:8px;vertical-align:top;margin-left:2px}
+.card-private-label{font-size:8px;letter-spacing:.23em;color:#aaaeb3;font-weight:700}
+.card-metal-details{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;margin-top:25px}
+.chip{width:37px;height:28px;border-radius:6px;margin:0;background:linear-gradient(135deg,#f0e9d5,#b8b3a5 45%,#77786f);box-shadow:inset 0 1px 2px #fff9,0 2px 4px #0007}
+.chip:after{inset:0 12px;border-left:1px solid #77776d;border-right:1px solid #77776d}
+.card-contactless{font-size:19px;color:#aeb2b6;transform:rotate(90deg);margin-right:2px}
+.large-card-number{position:relative;z-index:1;font:500 clamp(17px,2.1vw,22px) Manrope,sans-serif;letter-spacing:3.5px;margin-top:22px;color:#e1e2e2;text-shadow:0 1px 2px #000}
+.large-card-bottom{position:relative;z-index:1;margin-top:25px;max-width:100%;display:flex;justify-content:flex-start;gap:55px}
+.large-card-bottom span{display:grid;gap:5px}
+.large-card-bottom small{font-size:7px;letter-spacing:.19em;color:#9da2a8}
+.large-card-bottom b{font-size:10px;letter-spacing:.12em;color:#e0e1e2}
+.card-metal-edge{position:absolute;right:0;bottom:0;width:40%;height:2px;background:linear-gradient(90deg,transparent,#c4c5c4,transparent);opacity:.65}
+.mini-bank-card{padding:16px;border-radius:10px;height:148px}
+.mini-card-top{font-size:12px;letter-spacing:.12em}
+.mini-card-top small{font-size:7px;letter-spacing:.15em;color:#aeb1b6}
+.mini-card-bottom{color:#c7c9ca}
+.card-demo-note{margin-top:14px}
+.market-ribbon{padding:18px 22px;margin-bottom:20px}
+.market-ribbon-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.market-ribbon-head .eyebrow{margin-bottom:5px}
+.market-ribbon-head strong{font:700 14px Manrope,sans-serif}
+.market-feed-status{display:inline-flex;align-items:center;gap:7px;font-size:9px;color:var(--muted);white-space:nowrap}
+.market-feed-status i{width:6px;height:6px;border-radius:50%;background:#c18c45}
+.market-feed-status.live i{background:#32865b;box-shadow:0 0 0 3px #32865b18}
+.market-ribbon-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:17px}
+.market-ribbon-item{display:grid;gap:5px;border-left:1px solid var(--line);padding-left:13px;min-width:0}
+.market-ribbon-item:first-child{border-left:0;padding-left:0}
+.market-ribbon-item span{font-size:9px;color:var(--muted);font-weight:700}
+.market-ribbon-item b{font:700 16px Manrope,sans-serif;letter-spacing:-.3px}
+.market-ribbon-item small{font-size:9px;color:var(--muted)}
+.market-ribbon-item small.up{color:#278258}.market-ribbon-item small.down{color:#b64c48}
+.market-disclaimer{font-size:9px;line-height:1.55;color:var(--muted);margin:12px 0 0}
+.market-summary-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:9px;color:var(--muted)}
+.market-panel .panel-heading{align-items:center}
+.market-refresh{font-size:10px;padding:8px 11px;white-space:nowrap}
+.market-panel .account-row{padding:16px 0}
+.market-panel .account-icon{font-size:11px;font-weight:800}
+.market-panel .account-meta span{font-size:10px}
+.market-quote-price{font-size:12px;font-weight:800}
+.market-quote-change{font-size:9px;margin-top:4px}
+.market-quote-change.up{color:#278258}.market-quote-change.down{color:#b64c48}
+.market-waiting{font-size:10px;color:var(--muted)}
+.market-symbol-pill{display:inline-flex;border:1px solid var(--line);border-radius:4px;padding:4px 6px;font-size:8px;letter-spacing:.08em;font-weight:800;color:var(--muted)}
+.market-panel .text-button:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:1100px){.sidebar{width:220px}.main-content{margin-left:220px;padding-left:28px;padding-right:28px}.cards-layout{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .sidebar{display:none}.main-content{margin:0;padding:0 17px 100px}
+ .topbar{margin-bottom:24px}.page-heading h1{font-size:27px}
+ .panel{padding:18px}.market-ribbon{padding:17px}
+ .market-ribbon-items{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:15px}
+ .market-ribbon-item:nth-child(3){border-left:0;padding-left:0}
+ .market-ribbon-item b{font-size:15px}
+ .large-bank-card{max-width:none;padding:22px 23px}
+ .large-card-number{font-size:clamp(15px,4vw,20px);letter-spacing:2.5px;margin-top:19px}
+ .large-card-bottom{margin-top:20px;gap:28px}
+ .card-private-label{font-size:7px}
+ .market-summary-line{font-size:8px}
+}
+@media(max-width:390px){.market-ribbon-head{align-items:flex-start;flex-direction:column}.market-refresh{padding:7px 9px}.large-card-number{letter-spacing:1.8px}}
+.theme-dark .market-ribbon,.theme-dark .market-panel{background:var(--surface)}
+.theme-dark .large-bank-card,.theme-dark .mini-bank-card{background:
+ radial-gradient(ellipse at 85% 12%,rgba(255,255,255,.11),transparent 34%),
+ repeating-linear-gradient(115deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 4px),
+ linear-gradient(135deg,#080a0d 0%,#202329 48%,#090b0e 100%)}
