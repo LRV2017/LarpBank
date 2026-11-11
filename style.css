@@ -12,3 +12,51 @@
 /* Bank identity, roleplay disclosure and card studio */
 .demo-mode-label{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--line);border-radius:5px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.09em;white-space:nowrap}.demo-mode-label i{width:6px;height:6px;background:#c58a39;border-radius:50%}.card-presets{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 17px}.card-style-picker{display:grid;gap:10px}.card-style-picker>span{font-size:12px;font-weight:700}.style-swatch{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer}.style-swatch.active{box-shadow:0 0 0 2px var(--accent)}.style-swatch.ocean{background:linear-gradient(135deg,#123f5b,#3983a2)}.style-swatch.sand{background:linear-gradient(135deg,#80613d,#c4a77b)}.style-swatch.carbon{background:linear-gradient(135deg,#17191d,#5a6068)}.style-swatch.rose{background:linear-gradient(135deg,#693d4b,#b77a87)}.card-custom-label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted)}.card-custom-label input[type=color]{width:44px;height:30px;padding:2px;border:1px solid var(--line);border-radius:5px;background:var(--surface);cursor:pointer}.card-custom-label input[type=text]{max-width:170px;width:55%;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--text);font:inherit}.card-demo-note{font-size:9px;font-weight:800;letter-spacing:.11em;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}.large-bank-card:after{content:'SIMULATED';position:absolute;right:20px;top:50%;font-size:9px;letter-spacing:.2em;font-weight:800;opacity:.42;transform:rotate(-90deg) translateX(50%);transform-origin:right center;pointer-events:none}
 @media(max-width:540px){.demo-mode-label{font-size:8px;padding:6px 7px}.topbar-actions{gap:6px}}
+
+
+/* Refined Bank visual system */
+:root{--bg:#f5f6f7;--surface:#fff;--surface-2:#f3f5f6;--text:#171d25;--muted:#737d88;--line:#e5e9ed;--accent:#172b43;--accent-soft:#edf1f5;--radius:12px;--shadow:0 2px 12px rgba(20,35,50,.035)}
+body{letter-spacing:-.01em}
+.brand{letter-spacing:-.65px}
+.brand-mark{border-radius:8px;background:#172b43}
+.sidebar{width:252px;padding:30px 19px 18px}
+.sidebar .brand{padding-bottom:48px}
+.nav-item{border-radius:8px;padding:11px 12px;font-size:12px}
+.nav-item.active{background:#edf1f5;color:#172b43}
+.main-content{margin-left:252px;padding:0 52px 64px}
+.topbar{height:72px;margin-bottom:38px}
+.breadcrumbs{font-size:11px;letter-spacing:.01em}
+.page-heading{margin-bottom:30px}
+.page-heading h1{font-size:30px;letter-spacing:-1.3px}
+.page-heading .eyebrow{letter-spacing:.13em}
+.btn{border-radius:8px;font-size:11px;padding:11px 15px}
+.btn-primary{background:#172b43}
+.btn-primary:hover{background:#263e5a;filter:none}
+.panel,.stat-card{border-radius:12px;box-shadow:0 1px 4px rgba(20,35,50,.025);border-color:#e7ebef}
+.panel{padding:22px 23px}
+.balance-card{background:linear-gradient(115deg,#14263a,#263d56);border-radius:12px;box-shadow:none}
+.balance-amount{font-size:39px;letter-spacing:-1.7px}
+.quick-icon{border-radius:10px}
+.quick-icon.dark{background:#172b43;border-color:#172b43}
+.account-icon,.transaction-icon{border-radius:9px}
+.mini-bank-card,.large-bank-card{border-radius:12px}
+.card-controls-panel{border-radius:12px}
+.demo-mode-label{border-radius:4px;font-size:8px;letter-spacing:.08em;padding:6px 8px}
+.account-status-pill{border-radius:4px;background:#f3f7f4}
+.search-trigger{border-radius:7px}
+.icon-btn{border-radius:8px}
+.auth-aside{background:#14263a}
+.auth-pitch h1{letter-spacing:-3.2px}
+.auth-tabs{border-radius:8px}
+.auth-tab{border-radius:6px}
+.auth-card input,.modal-input,.search-field input,.transaction-toolbar select,.page-heading select,.setting-row select{border-radius:7px}
+.card-style-picker{max-width:520px}
+.card-style-picker>span{letter-spacing:.01em}
+.card-demo-note{font-size:8px;letter-spacing:.08em}
+@media(max-width:1100px){.sidebar{width:220px}.main-content{margin-left:220px;padding-left:30px;padding-right:30px}}
+@media(max-width:760px){.sidebar{display:none}.main-content{margin:0;padding:0 18px 100px}.topbar{margin-bottom:25px}.page-heading h1{font-size:26px}.panel{padding:18px}.mobile-nav .nav-item.active{color:#172b43}}
+.theme-dark{--accent:#dce5ef;--accent-soft:#293440}
+.theme-dark .nav-item.active{color:#eef3f8}
+.theme-dark .quick-icon.dark,.theme-dark .brand-mark,.theme-dark .settings-avatar{background:#dce5ef;color:#172b43}
+.theme-dark .btn-primary{background:#dce5ef;color:#172b43}
+.theme-dark .balance-card{background:linear-gradient(115deg,#0c1724,#1b2d40)}
